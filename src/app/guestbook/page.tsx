@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
 import { listEntries, MAX_NAME, MAX_BODY, MOODS } from "@/lib/guestbook";
 import { isOwner } from "@/lib/owner";
-import {
-	signGuestbook,
-	unlockOwner,
-	lockOwner,
-	hideEntry,
-	removeEntry,
-} from "./actions";
+import { signGuestbook, hideEntry, removeEntry } from "./actions";
 
 export const metadata: Metadata = { title: "방명록" };
 
@@ -135,46 +130,19 @@ export default async function GuestbookPage({
 						</button>
 					</form>
 
-					{/* 오너 잠금 / 해제 */}
-					<div className="mt-8 border-t rule pt-5">
-						{owner ? (
-							<form
-								action={lockOwner}
-								className="flex items-center justify-between gap-3"
+					{owner && (
+						<div className="mt-8 border-t rule pt-5 flex items-center justify-between gap-3">
+							<span className="kicker text-accent">
+								● Owner — 삭제·숨김 가능
+							</span>
+							<Link
+								href="/admin"
+								className="text-sm border-b border-ink pb-0.5 hover:text-accent hover:border-accent transition-colors"
 							>
-								<span className="kicker text-accent">
-									● Owner mode — 삭제·숨김 가능
-								</span>
-								<button
-									type="submit"
-									className="text-sm border-b border-ink pb-0.5 hover:text-accent hover:border-accent transition-colors"
-								>
-									잠그기
-								</button>
-							</form>
-						) : (
-							<details className="text-sm">
-								<summary className="kicker cursor-pointer select-none">
-									Owner · 오너 잠금 해제
-								</summary>
-								<form action={unlockOwner} className="mt-3 flex gap-2">
-									<input
-										name="passphrase"
-										type="password"
-										autoComplete="off"
-										className="flex-1 border rule bg-paper px-3 py-2 text-sm focus:outline-none focus:border-accent"
-										placeholder="패스프레이즈"
-									/>
-									<button
-										type="submit"
-										className="border rule px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
-									>
-										해제
-									</button>
-								</form>
-							</details>
-						)}
-					</div>
+								어드민 →
+							</Link>
+						</div>
+					)}
 				</div>
 
 				{/* ── 목록 ───────────────────────────────────── */}

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createEntry, setHidden, deleteEntry } from "@/lib/guestbook";
-import { isOwner, tryUnlock, lock } from "@/lib/owner";
+import { isOwner } from "@/lib/owner";
 
 function err(msg: string): never {
 	redirect(`/guestbook?err=${encodeURIComponent(msg)}#sign`);
@@ -30,19 +30,6 @@ export async function signGuestbook(formData: FormData) {
 	revalidatePath("/guestbook");
 	if (!res.ok) err(res.error);
 	redirect("/guestbook?ok=1#entries");
-}
-
-export async function unlockOwner(formData: FormData) {
-	const ok = await tryUnlock(String(formData.get("passphrase") ?? ""));
-	revalidatePath("/guestbook");
-	if (!ok) redirect(`/guestbook?err=${encodeURIComponent("패스프레이즈가 맞지 않아요.")}`);
-	redirect("/guestbook?owner=1#entries");
-}
-
-export async function lockOwner() {
-	await lock();
-	revalidatePath("/guestbook");
-	redirect("/guestbook");
 }
 
 export async function hideEntry(formData: FormData) {

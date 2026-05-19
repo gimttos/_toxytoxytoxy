@@ -1,0 +1,267 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { isOwner } from "@/lib/owner";
+import { listRoomLinks, listNotes } from "@/lib/admin";
+import {
+	unlockAdmin,
+	lockAdmin,
+	addRoomLinkAction,
+	deleteRoomLinkAction,
+	addNoteAction,
+	deleteNoteAction,
+} from "./actions";
+
+export const metadata: Metadata = {
+	title: "어드민",
+	robots: { index: false, follow: false },
+};
+export const dynamic = "force-dynamic";
+
+const fmt = new Intl.DateTimeFormat("ko-KR", {
+	dateStyle: "medium",
+	timeStyle: "short",
+	timeZone: "Asia/Seoul",
+});
+
+const inputCls =
+	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+
+export default async function AdminPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ err?: string; owner?: string }>;
+}) {
+	const sp = await searchParams;
+	const owner = await isOwner();
+
+	return (
+		<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 sm:py-24">
+			<div className="flex items-baseline justify-between border-b-2 border-ink pb-4">
+				<h2 className="display-en text-3xl sm:text-5xl font-semibold flex items-baseline gap-2">
+					Admin
+					<span className="dot" aria-hidden />
+				</h2>
+				<Link href="/" className="kicker hover:text-accent transition-colors">
+					← Cover
+				</Link>
+			</div>
+
+			{sp.err && (
+				<p className="mt-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+					{sp.err}
+				</p>
+			)}
+
+			{!owner ? (
+				<div className="mt-10 max-w-sm">
+					<p className="kicker">Owner only · 오너 전용</p>
+					<form action={unlockAdmin} className="mt-4 grid gap-3">
+						<input
+							name="passphrase"
+							type="password"
+							autoComplete="off"
+							required
+							placeholder="패스프레이즈"
+							className={inputCls}
+						/>
+						<button
+							type="submit"
+							className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+						>
+							잠금 해제
+						</button>
+					</form>
+					<p className="mt-4 kicker text-muted">
+						해제하면 갤러리·캐릭터·방명록의 오너 도구도 함께 열려요.
+					</p>
+				</div>
+			) : (
+				<div className="mt-8 grid gap-16">
+					<form
+						action={lockAdmin}
+						className="flex items-center justify-between gap-3 border rule bg-paper-2 px-4 py-3"
+					>
+						<span className="kicker text-accent">
+							● Owner mode — 사이트 전역 적용 중
+						</span>
+						<button
+							type="submit"
+							className="text-sm border-b border-ink pb-0.5 hover:text-accent hover:border-accent transition-colors"
+						>
+							잠그기
+						</button>
+					</form>
+
+					{/* 바로가기 */}
+					<div>
+						<p className="kicker">Manage · 바로가기</p>
+						<div className="mt-3 flex flex-wrap gap-3 text-sm">
+							{[
+								["/guestbook", "방명록 관리"],
+								["/gallery", "갤러리 업로드"],
+								["/characters", "캐릭터 편집"],
+							].map(([href, label]) => (
+								<Link
+									key={href}
+									href={href}
+									className="border rule px-4 py-2 hover:bg-ink hover:text-paper transition-colors"
+								>
+									{label} →
+								</Link>
+							))}
+						</div>
+						<p className="mt-2 kicker text-muted">
+							각 페이지의 오너 도구는 잠금 해제 상태에서 바로 보여요.
+						</p>
+					</div>
+
+					{/* 룸링크 정리함 */}
+					<div>
+						<div className="flex items-baseline justify-between border-b rule pb-3">
+							<h3 className="display-en text-xl sm:text-3xl font-semibold">
+								Room links
+							</h3>
+							<span className="kicker">룸링크 정리함</span>
+						</div>
+						<RoomLinks />
+						<details className="mt-6">
+							<summary className="kicker text-accent cursor-pointer select-none">
+								+ 링크 추가
+							</summary>
+							<form
+								action={addRoomLinkAction}
+								className="mt-4 grid gap-3 max-w-md"
+							>
+								<input name="label" required placeholder="라벨" className={inputCls} />
+								<input
+									name="url"
+									type="url"
+									required
+									placeholder="https:// 디코/콕포/VTT"
+									className={inputCls}
+								/>
+								<input
+									name="system"
+									placeholder="시스템 (선택)"
+									className={inputCls}
+								/>
+								<input name="note" placeholder="비고 (선택)" className={inputCls} />
+								<button
+									type="submit"
+									className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								>
+									추가
+								</button>
+							</form>
+						</details>
+					</div>
+
+					{/* 세션 준비 메모 */}
+					<div>
+						<div className="flex items-baseline justify-between border-b rule pb-3">
+							<h3 className="display-en text-xl sm:text-3xl font-semibold">
+								Notes
+							</h3>
+							<span className="kicker">세션 준비 · 비공개</span>
+						</div>
+						<AdminNotes />
+						<details className="mt-6">
+							<summary className="kicker text-accent cursor-pointer select-none">
+								+ 메모 추가
+							</summary>
+							<form
+								action={addNoteAction}
+								className="mt-4 grid gap-3 max-w-md"
+							>
+								<input
+									name="title"
+									placeholder="제목 (선택)"
+									className={inputCls}
+								/>
+								<textarea
+									name="body"
+									required
+									rows={4}
+									placeholder="메모 내용"
+									className={`${inputCls} resize-y`}
+								/>
+								<button
+									type="submit"
+									className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								>
+									저장
+								</button>
+							</form>
+						</details>
+					</div>
+				</div>
+			)}
+		</section>
+	);
+}
+
+async function RoomLinks() {
+	const links = await listRoomLinks();
+	if (links.length === 0)
+		return <p className="mt-4 text-sm text-muted">아직 링크가 없어요.</p>;
+	return (
+		<ul className="mt-4">
+			{links.map((l) => (
+				<li
+					key={l.id}
+					className="flex items-baseline gap-3 border-b rule py-3 flex-wrap"
+				>
+					<a
+						href={l.url}
+						target="_blank"
+						rel="noreferrer"
+						className="font-medium hover:text-accent transition-colors"
+					>
+						{l.label}
+					</a>
+					{l.system && <span className="kicker text-accent">{l.system}</span>}
+					{l.note && <span className="text-sm text-muted">— {l.note}</span>}
+					<form action={deleteRoomLinkAction} className="ml-auto">
+						<input type="hidden" name="id" value={l.id} />
+						<button
+							type="submit"
+							className="kicker text-accent hover:opacity-70 transition-opacity"
+						>
+							삭제
+						</button>
+					</form>
+				</li>
+			))}
+		</ul>
+	);
+}
+
+async function AdminNotes() {
+	const notes = await listNotes();
+	if (notes.length === 0)
+		return <p className="mt-4 text-sm text-muted">아직 메모가 없어요.</p>;
+	return (
+		<ul className="mt-4 grid gap-4">
+			{notes.map((n) => (
+				<li key={n.id} className="border rule p-4">
+					<div className="flex items-baseline justify-between gap-3">
+						<span className="font-medium">{n.title ?? "메모"}</span>
+						<span className="kicker">{fmt.format(new Date(n.created_at))}</span>
+					</div>
+					<p className="mt-2 text-sm leading-relaxed whitespace-pre-wrap break-words">
+						{n.body}
+					</p>
+					<form action={deleteNoteAction} className="mt-2">
+						<input type="hidden" name="id" value={n.id} />
+						<button
+							type="submit"
+							className="kicker text-accent hover:opacity-70 transition-opacity"
+						>
+							삭제
+						</button>
+					</form>
+				</li>
+			))}
+		</ul>
+	);
+}

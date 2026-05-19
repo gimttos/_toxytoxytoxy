@@ -46,7 +46,7 @@ export const nav: NavItem[] = [
 	{ no: "07", label: "로그", en: "Log", href: "/log", desc: "갱신기록 · 잡담", status: "soon" },
 	{ no: "08", label: "일정", en: "Schedule", href: "/schedule", desc: "캘린더 · 생활 기록", status: "soon" },
 	{ no: "09", label: "소개", en: "About", href: "/about", desc: "성향표 · 자기소개", status: "live" },
-	{ no: "00", label: "어드민", en: "Admin", href: "/admin", desc: "오너 전용 — 인증 필요", status: "soon", admin: true },
+	{ no: "00", label: "어드민", en: "Admin", href: "/admin", desc: "오너 전용 — 인증 필요", status: "live", admin: true },
 ];
 
 // 공개 네비게이션 — 헤더/푸터/표지 목차는 이걸 쓴다(어드민 제외).
