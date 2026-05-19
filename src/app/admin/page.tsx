@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { isOwner } from "@/lib/owner";
 import { listRoomLinks, listNotes } from "@/lib/admin";
+import { getSiteMeta } from "@/lib/meta";
 import {
 	unlockAdmin,
 	lockAdmin,
@@ -9,6 +10,9 @@ import {
 	deleteRoomLinkAction,
 	addNoteAction,
 	deleteNoteAction,
+	setStatusAction,
+	uploadBgmAction,
+	clearBgmAction,
 } from "./actions";
 
 export const metadata: Metadata = {
@@ -33,6 +37,7 @@ export default async function AdminPage({
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
+	const meta = owner ? await getSiteMeta() : null;
 
 	return (
 		<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 sm:py-24">
@@ -193,6 +198,81 @@ export default async function AdminPage({
 								</button>
 							</form>
 						</details>
+					</div>
+
+					{/* 소품 — 한마디 · BGM (표지에 노출) */}
+					<div>
+						<div className="flex items-baseline justify-between border-b rule pb-3">
+							<h3 className="display-en text-xl sm:text-3xl font-semibold">
+								Widgets
+							</h3>
+							<span className="kicker">소품 · 표지</span>
+						</div>
+
+						<form
+							action={setStatusAction}
+							className="mt-4 grid gap-3 max-w-md"
+						>
+							<label className="kicker">한마디 (상태 한 줄)</label>
+							<input
+								name="status"
+								defaultValue={meta?.status ?? ""}
+								placeholder="지금 ○○ 굴리는 중 (비우면 숨김)"
+								className={inputCls}
+							/>
+							<button
+								type="submit"
+								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+							>
+								한마디 저장
+							</button>
+						</form>
+
+						<div className="mt-6 grid gap-3 max-w-md">
+							<p className="kicker">
+								BGM —{" "}
+								{meta?.bgm_key ? (
+									<span className="text-accent">
+										등록됨{meta.bgm_title ? ` · ${meta.bgm_title}` : ""}
+									</span>
+								) : (
+									<span className="text-muted">없음</span>
+								)}
+							</p>
+							<form action={uploadBgmAction} className="grid gap-3">
+								<input
+									type="file"
+									name="bgm"
+									accept="audio/*"
+									required
+									className="text-sm file:mr-3 file:border file:rule file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+								/>
+								<input
+									name="bgm_title"
+									placeholder="곡 제목 (선택)"
+									className={inputCls}
+								/>
+								<button
+									type="submit"
+									className="border rule px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
+								>
+									BGM 업로드
+								</button>
+							</form>
+							{meta?.bgm_key && (
+								<form action={clearBgmAction}>
+									<button
+										type="submit"
+										className="kicker text-accent hover:opacity-70 transition-opacity"
+									>
+										BGM 제거
+									</button>
+								</form>
+							)}
+							<p className="kicker text-muted">
+								기본 OFF — 방문자가 표지에서 직접 켜요.
+							</p>
+						</div>
 					</div>
 				</div>
 			)}

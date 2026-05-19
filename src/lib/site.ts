@@ -43,7 +43,7 @@ export const nav: NavItem[] = [
 	{ no: "04", label: "갤러리", en: "Gallery", href: "/gallery", desc: "오타쿠 사진 아카이브", status: "live" },
 	{ no: "05", label: "세션", en: "Sessions", href: "/sessions", desc: "TRPG 기록부 · 로그", status: "live" },
 	{ no: "06", label: "배너", en: "Banners", href: "/banners", desc: "배너 교환 · 링크", status: "live" },
-	{ no: "07", label: "로그", en: "Log", href: "/log", desc: "갱신기록 · 잡담", status: "soon" },
+	{ no: "07", label: "로그", en: "Log", href: "/log", desc: "갱신기록 · 잡담", status: "live" },
 	{ no: "08", label: "일정", en: "Schedule", href: "/schedule", desc: "캘린더 · 생활 기록", status: "soon" },
 	{ no: "09", label: "소개", en: "About", href: "/about", desc: "성향표 · 자기소개", status: "live" },
 	{ no: "00", label: "어드민", en: "Admin", href: "/admin", desc: "오너 전용 — 인증 필요", status: "live", admin: true },

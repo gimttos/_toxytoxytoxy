@@ -1,9 +1,22 @@
 import Link from "next/link";
 import { site, publicNav } from "@/lib/site";
+import { bumpHits, getSiteMeta } from "@/lib/meta";
+import { latestUpdate } from "@/lib/log";
+import { BgmToggle } from "@/components/bgm-toggle";
 
 const contents = publicNav.filter((n) => n.href !== "/");
 
-export default function Home() {
+// 소품(방문자 수·한마디·BGM)을 표지에서 읽으므로 동적.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+	const [hits, meta, lu] = await Promise.all([
+		bumpHits(),
+		getSiteMeta(),
+		latestUpdate(),
+	]);
+	const luText = lu ? (lu.title ?? lu.body.split("\n")[0]).slice(0, 44) : null;
+
 	return (
 		<>
 			{/* ─── 표지(COVER) ─────────────────────────────────────── */}
@@ -28,6 +41,16 @@ export default function Home() {
 						>
 							{site.taglineKo}.
 						</p>
+
+						{meta.status && (
+							<p
+								className="mt-4 text-sm rise flex items-baseline gap-2"
+								style={{ animationDelay: "200ms" }}
+							>
+								<span className="kicker text-accent">한마디</span>
+								<span className="text-muted">{meta.status}</span>
+							</p>
+						)}
 
 						{/* 표지 카피 */}
 						<ul className="mt-12 max-w-md">
@@ -104,16 +127,30 @@ export default function Home() {
 				</ul>
 			</section>
 
-			{/* ─── 발행 한 줄 ──────────────────────────────────────── */}
+			{/* ─── 발행 한 줄 + 소품 ───────────────────────────────── */}
 			<section className="border-t rule">
 				<div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-10 flex flex-wrap items-center justify-between gap-4">
 					<p className="display-en text-xl sm:text-2xl font-semibold flex items-baseline gap-2">
 						{site.name}
 						<span className="dot" aria-hidden />
 					</p>
-					<p className="kicker">
-						{site.issue} · {site.since} · Personal Archive
-					</p>
+					<div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+						{luText && (
+							<Link
+								href="/log?kind=update"
+								className="kicker hover:text-accent transition-colors"
+							>
+								최근 갱신 — {luText}
+							</Link>
+						)}
+						<BgmToggle
+							src={meta.bgm_key ? `/media/${meta.bgm_key}` : null}
+							title={meta.bgm_title}
+						/>
+						<span className="kicker text-muted">
+							visitors {hits.toLocaleString()}
+						</span>
+					</div>
 				</div>
 			</section>
 		</>
