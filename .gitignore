@@ -53,3 +53,4 @@ next-env.d.ts
 
 # Claude Code (personal local agent settings — not shared)
 .claude/
+CLAUDE.md
