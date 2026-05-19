@@ -54,3 +54,7 @@ next-env.d.ts
 # Claude Code (personal local agent settings — not shared)
 .claude/
 CLAUDE.md
+
+# scratch input dropped in for Claude to read — not site assets
+my-page-draft*.json
+*.draft.json
