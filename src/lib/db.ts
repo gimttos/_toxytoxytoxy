@@ -9,6 +9,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 type ExtraEnv = {
 	OWNER_SECRET?: string;
 	GUESTBOOK_SALT?: string;
+	GCAL_ICS_URL?: string; // 구글 캘린더 비공개 iCal 주소
 };
 
 export function getEnv(): CloudflareEnv & ExtraEnv {
