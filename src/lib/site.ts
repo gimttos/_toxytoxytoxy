@@ -39,7 +39,7 @@ export type NavItem = {
 export const nav: NavItem[] = [
 	{ no: "01", label: "표지", en: "Cover", href: "/", desc: "이번 호의 첫 장", status: "live" },
 	{ no: "02", label: "방명록", en: "Guestbook", href: "/guestbook", desc: "다녀간 흔적을 남기는 곳", status: "live" },
-	{ no: "03", label: "캐릭터", en: "Characters", href: "/characters", desc: "자캐 도감 · 관계도", status: "soon" },
+	{ no: "03", label: "캐릭터", en: "Characters", href: "/characters", desc: "자캐 도감 · 관계도", status: "live" },
 	{ no: "04", label: "갤러리", en: "Gallery", href: "/gallery", desc: "오타쿠 사진 아카이브", status: "live" },
 	{ no: "05", label: "세션", en: "Sessions", href: "/sessions", desc: "TRPG 기록부 · 로그", status: "soon" },
 	{ no: "06", label: "배너", en: "Banners", href: "/banners", desc: "배너 교환 · 링크", status: "soon" },
