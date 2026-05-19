@@ -50,3 +50,6 @@ next-env.d.ts
 
 
 !.dev.vars.example
+
+# Claude Code (personal local agent settings — not shared)
+.claude/

@@ -32,6 +32,22 @@
 			"service": "my-site"
 		}
 	],
+	// D1 — 방명록/세션/로그 등 글 데이터 (M2~). 마이그레이션은 migrations/ 의 SQL 파일.
+	// database_id 는 오너가 `wrangler d1 create pal3bluedot-db` 실행 후 출력값으로 교체.
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "pal3bluedot-db",
+			"database_id": "2521e32b-e1ca-4015-b403-d549101843ed",
+			"migrations_dir": "migrations"
+		},
+		{
+			"binding": "pal3bluedot_db",
+			"database_name": "pal3bluedot-db",
+			"database_id": "2521e32b-e1ca-4015-b403-d549101843ed",
+			"remote": true
+		}
+	],
 	"observability": {
 		"enabled": true
 	},

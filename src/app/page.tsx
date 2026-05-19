@@ -1,52 +1,121 @@
-import Image from "next/image";
+import Link from "next/link";
+import { site, publicNav } from "@/lib/site";
+
+const contents = publicNav.filter((n) => n.href !== "/");
 
 export default function Home() {
 	return (
-		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-				<Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
-				<ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-					<li className="mb-2 tracking-[-.01em]">
-						Get started by editing{" "}
-						<code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-							src/app/page.tsx
-						</code>
-						.
-					</li>
-					<li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-				</ol>
+		<>
+			{/* ─── 표지(COVER) ─────────────────────────────────────── */}
+			<section className="border-b rule">
+				<div className="mx-auto max-w-[1240px] px-5 sm:px-8 grid lg:grid-cols-[1.15fr_1fr]">
+					{/* 표제 */}
+					<div className="py-16 sm:py-24 lg:pr-12 lg:border-r rule">
+						<p className="kicker rise" style={{ animationDelay: "0ms" }}>
+							{site.issue} — {site.since} · Cover
+						</p>
+						<h2
+							className="display-en mt-7 text-[clamp(3.2rem,12vw,9rem)] font-semibold rise"
+							style={{ animationDelay: "80ms" }}
+						>
+							A personal
+							<br />
+							archive<span className="text-accent">.</span>
+						</h2>
+						<p
+							className="mt-6 text-base sm:text-lg text-muted rise"
+							style={{ animationDelay: "160ms" }}
+						>
+							{site.taglineKo}.
+						</p>
 
-				<div className="flex gap-4 items-center flex-col sm:flex-row">
-					<a
-						className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Read our docs
-					</a>
+						{/* 표지 카피 */}
+						<ul className="mt-12 max-w-md">
+							{site.coverLines.map((line, i) => (
+								<li
+									key={line}
+									className="flex items-baseline gap-3 border-t rule py-3 rise"
+									style={{ animationDelay: `${240 + i * 70}ms` }}
+								>
+									<span className="kicker text-accent">{String(i + 1).padStart(2, "0")}</span>
+									<span className="text-[15px]">{line}</span>
+								</li>
+							))}
+						</ul>
+					</div>
+
+					{/* 표지 사진 자리 */}
+					<div className="py-16 sm:py-24 lg:pl-12 flex">
+						<div
+							className="relative ticks flex-1 min-h-[360px] border rule rise bg-paper-2"
+							style={{ animationDelay: "200ms" }}
+						>
+							<div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+								<span className="dot mb-5" aria-hidden />
+								<p className="display-en text-5xl font-semibold">Cover</p>
+								<p className="mt-3 text-sm text-muted">표지 이미지 자리</p>
+								<p className="kicker mt-5">Image — with the gallery · M3</p>
+							</div>
+							<span className="absolute bottom-3 left-3 kicker">Plate 01</span>
+						</div>
+					</div>
 				</div>
-			</main>
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-					Go to nextjs.org →
-				</a>
-			</footer>
-		</div>
+			</section>
+
+			{/* ─── 목차(CONTENTS) ──────────────────────────────────── */}
+			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 sm:py-24">
+				<div className="flex items-baseline justify-between border-b-2 border-ink pb-4">
+					<h3 className="display-en text-3xl sm:text-5xl font-semibold">
+						Contents
+					</h3>
+					<span className="kicker">목차 — {contents.length}</span>
+				</div>
+
+				<ul>
+					{contents.map((item) => (
+						<li key={item.href}>
+							<Link
+								href={item.href}
+								className="group grid grid-cols-[2.5rem_1fr_auto] sm:grid-cols-[5rem_1fr_1fr_auto] items-center gap-4 border-b rule py-6 sm:py-8 px-2 -mx-2 transition-colors hover:bg-ink hover:text-paper"
+							>
+								<span className="display-en text-2xl sm:text-4xl text-accent">
+									{item.no}
+								</span>
+								<span className="flex items-baseline gap-3">
+									<span className="display-en text-2xl sm:text-4xl font-semibold">
+										{item.en}
+									</span>
+									<span className="text-sm text-muted group-hover:text-paper/60">
+										{item.label}
+									</span>
+								</span>
+								<span className="hidden sm:block text-sm text-muted group-hover:text-paper/60">
+									{item.desc}
+								</span>
+								<span className="kicker flex items-center gap-3 group-hover:text-paper/70">
+									{item.status === "soon" ? "soon" : "open"}
+									<span className="transition-transform duration-300 group-hover:translate-x-1.5">
+										→
+									</span>
+								</span>
+							</Link>
+						</li>
+					))}
+				</ul>
+			</section>
+
+			{/* ─── 발행 한 줄 ──────────────────────────────────────── */}
+			<section className="border-t rule">
+				<div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-10 flex flex-wrap items-center justify-between gap-4">
+					<p className="display-en text-xl sm:text-2xl font-semibold flex items-baseline gap-2">
+						{site.name}
+						<span className="dot" aria-hidden />
+					</p>
+					<p className="kicker">
+						{site.issue} · {site.since} · Personal Archive
+					</p>
+				</div>
+			</section>
+		</>
 	);
 }

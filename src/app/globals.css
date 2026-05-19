@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
-:root {
-	--background: #ffffff;
-	--foreground: #171717;
-}
-
+/* ─────────────────────────────────────────────────────────────
+   디자인 토큰 — 색/폰트는 전부 여기서 바꾼다.
+   무드: 순백 에디토리얼 · 잉크 블랙 · 일렉트릭 블루 악센트
+   ───────────────────────────────────────────────────────────── */
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+	--color-paper: #fcfcfd;
+	--color-paper-2: #f3f4f6;
+	--color-ink: #121316;
+	--color-muted: #6b7079;
+	--color-line: #e3e3e6;
+	--color-accent: #1f4dff;
+	--color-on-accent: #ffffff;
+
+	--font-display: "Fraunces", "Nanum Myeongjo", Georgia, serif;
+	--font-serif-ko: "Nanum Myeongjo", "Fraunces", serif;
+	--font-sans: "IBM Plex Sans KR", system-ui, sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+	--ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-	}
+/* ─── 베이스 ─────────────────────────────────────────────────── */
+html {
+	-webkit-text-size-adjust: 100%;
 }
 
 body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+	background: var(--color-paper);
+	color: var(--color-ink);
+	font-family: var(--font-sans);
+	font-feature-settings: "ss01";
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+::selection {
+	background: var(--color-accent);
+	color: var(--color-on-accent);
+}
+
+/* ─── 에디토리얼 유틸 ────────────────────────────────────────── */
+@layer components {
+	/* 작은 모노 라벨 (폴리오 / 섹션 표시) */
+	.kicker {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+
+	/* 헤어라인 규칙선 */
+	.rule {
+		border-color: var(--color-line);
+	}
+
+	/* 정체성 마크 — 블루 닷 */
+	.dot {
+		display: inline-block;
+		width: 0.4rem;
+		height: 0.4rem;
+		border-radius: 9999px;
+		background: var(--color-accent);
+		vertical-align: middle;
+	}
+
+	/* 표지/플레이트 모서리 틱 마크 */
+	.ticks::before,
+	.ticks::after {
+		content: "";
+		position: absolute;
+		width: 14px;
+		height: 14px;
+		border-color: var(--color-ink);
+		border-style: solid;
+	}
+	.ticks::before {
+		top: 12px;
+		left: 12px;
+		border-width: 1px 0 0 1px;
+	}
+	.ticks::after {
+		bottom: 12px;
+		right: 12px;
+		border-width: 0 1px 1px 0;
+	}
+
+	/* 큰 한글 디스플레이 헤드라인 */
+	.display {
+		font-family: var(--font-serif-ko);
+		font-weight: 800;
+		line-height: 0.98;
+		letter-spacing: -0.01em;
+	}
+
+	/* 라틴 디스플레이 (Fraunces, 광학 사이즈) */
+	.display-en {
+		font-family: var(--font-display);
+		font-optical-sizing: auto;
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		line-height: 0.95;
+	}
+}
+
+/* ─── 등장 애니메이션 ────────────────────────────────────────── */
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.rise {
+	animation: rise 0.9s var(--ease-out-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rise {
+		animation: none;
+	}
+	* {
+		scroll-behavior: auto !important;
+	}
 }

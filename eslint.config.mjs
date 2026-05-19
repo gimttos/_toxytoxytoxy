@@ -1,14 +1,12 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-});
-
-const eslintConfig = [...compat.extends("next/core-web-vitals", "next/typescript")];
+// Next 16 의 eslint-config-next 는 flat config 를 직접 export 한다.
+// (FlatCompat 경유는 ESLint 9 에서 순환참조로 깨짐)
+const eslintConfig = [
+	{ ignores: [".next/**", ".open-next/**", ".wrangler/**", "node_modules/**", "cloudflare-env.d.ts"] },
+	...nextCoreWebVitals,
+	...nextTypescript,
+];
 
 export default eslintConfig;
