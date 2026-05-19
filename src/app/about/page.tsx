@@ -4,6 +4,18 @@ import { about } from "@/lib/about";
 
 export const metadata: Metadata = { title: "소개" };
 
+function Chips({ items }: { items: string[] }) {
+	return (
+		<ul className="mt-3 flex flex-wrap gap-2 text-sm">
+			{items.map((t) => (
+				<li key={t} className="border rule px-3 py-1">
+					{t}
+				</li>
+			))}
+		</ul>
+	);
+}
+
 function List({ title, en, items }: { title: string; en: string; items: string[] }) {
 	if (items.length === 0) return null;
 	return (
@@ -42,21 +54,24 @@ export default function AboutPage() {
 						{a.intro.aka.length > 0 && (
 							<p className="mt-2 kicker">{a.intro.aka.join(" · ")}</p>
 						)}
-						{a.intro.links.length > 0 && (
-							<div className="mt-4 flex flex-wrap gap-3 text-sm">
-								{a.intro.links.map((l) => (
-									<a
-										key={l.href}
-										href={l.href}
-										target="_blank"
-										rel="noreferrer"
-										className="border-b border-ink pb-0.5 hover:text-accent hover:border-accent transition-colors"
-									>
-										{l.label}
-									</a>
-								))}
-							</div>
-						)}
+						<ul className="mt-4 flex flex-wrap gap-3 text-sm">
+							{a.intro.links.map((l) => (
+								<li key={l.label}>
+									{l.href ? (
+										<a
+											href={l.href}
+											target="_blank"
+											rel="noreferrer"
+											className="border-b border-ink pb-0.5 hover:text-accent hover:border-accent transition-colors"
+										>
+											{l.label}
+										</a>
+									) : (
+										<span className="text-muted">{l.label}</span>
+									)}
+								</li>
+							))}
+						</ul>
 					</div>
 					<div className="grid gap-2 self-center">
 						{a.intro.lines.map((line) => (
@@ -67,102 +82,142 @@ export default function AboutPage() {
 					</div>
 				</div>
 
-				{/* 성향표 */}
+				{/* 인용 */}
+				<figure className="border-l-2 border-accent pl-5 sm:pl-7">
+					<blockquote className="font-serif-ko text-lg sm:text-xl leading-relaxed whitespace-pre-line">
+						{a.quote.text}
+					</blockquote>
+					<figcaption className="mt-3 kicker text-muted">
+						— {a.quote.source} 中
+					</figcaption>
+				</figure>
+
+				{/* 좋아하는 것 */}
+				<div className="border-t rule pt-10">
+					<p className="kicker">Likes · 좋아하는 것</p>
+					<Chips items={a.likes} />
+				</div>
+
+				{/* TRPG */}
+				<div className="border-t rule pt-10 grid gap-8 sm:grid-cols-2">
+					<div>
+						<p className="kicker">Owned · 보유 룰</p>
+						<Chips items={a.trpg.owned} />
+					</div>
+					<div>
+						<p className="kicker">GM · 가능 룰</p>
+						<Chips items={a.trpg.gm} />
+						<p className="mt-4 text-sm text-muted">{a.trpg.note}</p>
+					</div>
+				</div>
+
+				{/* 성향표 — 구글 시트 임베드 */}
 				<div className="border-t rule pt-10">
 					<div className="flex items-baseline justify-between border-b-2 border-ink pb-4">
 						<h3 className="display-en text-2xl sm:text-4xl font-semibold">
 							Tendency
 						</h3>
-						<span className="kicker">성향표</span>
+						<a
+							href={a.tendency.linkUrl}
+							target="_blank"
+							rel="noreferrer"
+							className="kicker hover:text-accent transition-colors"
+						>
+							성향표 · 새 탭으로 ↗
+						</a>
 					</div>
-					<p className="mt-3 kicker text-muted">{a.tendency.legend}</p>
-					<ul className="mt-4">
-						{a.tendency.rows.map((r) => (
-							<li
-								key={r.topic}
-								className="flex items-baseline gap-4 border-b rule py-3"
-							>
-								<span
-									className={`display-en text-xl w-6 text-center ${
-										r.mark === "✕"
-											? "text-muted"
-											: r.mark === "△"
-												? "text-ink"
-												: "text-accent"
-									}`}
-									aria-hidden
-								>
-									{r.mark}
-								</span>
-								<span className="text-sm flex-1">{r.topic}</span>
-								{r.note && (
-									<span className="kicker text-muted">{r.note}</span>
-								)}
-							</li>
-						))}
-					</ul>
+					<p className="mt-3 text-sm text-muted max-w-prose">
+						{a.tendency.note}
+					</p>
+					<div className="mt-5 border rule bg-paper-2">
+						<iframe
+							src={a.tendency.embedUrl}
+							title="성향표"
+							loading="lazy"
+							className="w-full h-[70vh] min-h-[480px] block"
+						/>
+					</div>
 				</div>
 
 				{/* BYF · DNI · MUTE */}
-				<div className="border-t rule pt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-					<List title="팔로우 전" en="BYF" items={a.byf} />
-					<List title="상호작용 사절" en="DNI" items={a.dni} />
-					<List title="뮤트 권장" en="MUTE" items={a.mute} />
+				<div className="border-t rule pt-10 grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+					<List title="알아두기" en="BYF" items={a.byf} />
+					<div>
+						<p className="kicker">DNI · 사절</p>
+						{a.dniNote && (
+							<p className="mt-3 text-sm text-muted">{a.dniNote}</p>
+						)}
+						<ul className="mt-3 grid gap-2">
+							{a.dni.map((t) => (
+								<li key={t} className="flex gap-2.5 text-sm">
+									<span className="text-accent" aria-hidden>
+										—
+									</span>
+									<span>{t}</span>
+								</li>
+							))}
+						</ul>
+						{a.mute.length > 0 && (
+							<div className="mt-6">
+								<List title="뮤트 권장" en="MUTE" items={a.mute} />
+							</div>
+						)}
+					</div>
 				</div>
 
 				{/* 위시리스트 · 최애 */}
-				<div className="border-t rule pt-10 grid gap-10 lg:grid-cols-2">
-					<div>
-						<p className="kicker">Wishlist · 위시리스트</p>
-						{a.wishlist.length === 0 ? (
-							<p className="mt-3 text-sm text-muted">아직 없어요.</p>
-						) : (
-							<ul className="mt-3">
-								{a.wishlist.map((w) => (
-									<li
-										key={w.item}
-										className="flex items-baseline gap-3 border-b rule py-3"
-									>
-										<span
-											className={`text-sm flex-1 ${
-												w.got ? "text-muted line-through" : ""
-											}`}
+				{(a.wishlist.length > 0 || a.oshi.length > 0) && (
+					<div className="border-t rule pt-10 grid gap-10 lg:grid-cols-2">
+						{a.wishlist.length > 0 && (
+							<div>
+								<p className="kicker">Wishlist · 위시리스트</p>
+								<ul className="mt-3">
+									{a.wishlist.map((w) => (
+										<li
+											key={w.item}
+											className="flex items-baseline gap-3 border-b rule py-3"
 										>
-											{w.item}
-										</span>
-										{w.note && (
-											<span className="kicker text-muted">{w.note}</span>
-										)}
-										{w.got && <span className="kicker text-accent">받음</span>}
-									</li>
-								))}
-							</ul>
+											<span
+												className={`text-sm flex-1 ${
+													w.got ? "text-muted line-through" : ""
+												}`}
+											>
+												{w.item}
+											</span>
+											{w.note && (
+												<span className="kicker text-muted">{w.note}</span>
+											)}
+											{w.got && (
+												<span className="kicker text-accent">받음</span>
+											)}
+										</li>
+									))}
+								</ul>
+							</div>
+						)}
+						{a.oshi.length > 0 && (
+							<div>
+								<p className="kicker">Oshi · 최애</p>
+								<ul className="mt-3">
+									{a.oshi.map((o) => (
+										<li
+											key={`${o.name}-${o.from}`}
+											className="border-b rule py-3"
+										>
+											<p className="text-sm">
+												<span className="font-medium">{o.name}</span>
+												<span className="text-muted"> — {o.from}</span>
+											</p>
+											{o.note && (
+												<p className="mt-1 kicker text-muted">{o.note}</p>
+											)}
+										</li>
+									))}
+								</ul>
+							</div>
 						)}
 					</div>
-					<div>
-						<p className="kicker">Oshi · 최애</p>
-						{a.oshi.length === 0 ? (
-							<p className="mt-3 text-sm text-muted">아직 없어요.</p>
-						) : (
-							<ul className="mt-3">
-								{a.oshi.map((o) => (
-									<li
-										key={`${o.name}-${o.from}`}
-										className="border-b rule py-3"
-									>
-										<p className="text-sm">
-											<span className="font-medium">{o.name}</span>
-											<span className="text-muted"> — {o.from}</span>
-										</p>
-										{o.note && (
-											<p className="mt-1 kicker text-muted">{o.note}</p>
-										)}
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				</div>
+				)}
 			</section>
 		</>
 	);

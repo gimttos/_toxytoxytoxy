@@ -1,0 +1,440 @@
+{
+  "blocks": [
+    {
+      "type": "hero",
+      "variant": "b",
+      "data": {
+        "name": "똣",
+        "tagline": "@_toxytoxytoxy",
+        "imgUrl": "https://cdn.luv3r.me/og/4ada59d2ae20.jpg",
+        "avatarUrl": "https://cdn.luv3r.me/og/eb7f10cf605b.jpg",
+        "overlayMode": "dark",
+        "_private": false
+      },
+      "id": "b1776426666201",
+      "hidden": false
+    },
+    {
+      "type": "links",
+      "variant": "g",
+      "data": {
+        "items": [
+          {
+            "name": "Twitter",
+            "url": "https://x.com/_toxytoxytoxy"
+          },
+          {
+            "name": "Discord",
+            "url": "ttos7067"
+          },
+          {
+            "name": "KakaoTalk",
+            "url": "https://open.kakao.com/o/sbG2hI9f"
+          }
+        ]
+      },
+      "id": "b1776427007142",
+      "hidden": false
+    },
+    {
+      "type": "text",
+      "variant": "o",
+      "data": {
+        "content": "그대가 옳다.\n모든 것은 지나갈 것이다.\n\n다시 한 번 그대가 옳다.\n그대와 나의 이야기는 언제고 끝날 것이다.\n그러나 그것은 천천히 올 것이고, 그대와 나는 고통스러울 것이다.\n\n<야만적인 앨리스씨> 中",
+        "title": "",
+        "fontSize": "sm"
+      },
+      "id": "b1776427449525",
+      "hidden": false
+    },
+    {
+      "type": "divider",
+      "variant": "d",
+      "data": {},
+      "id": "b1776427196663"
+    },
+    {
+      "type": "page_break",
+      "variant": "a",
+      "data": {
+        "label": "info",
+        "pageNum": 2
+      },
+      "id": "b1776427275733"
+    },
+    {
+      "type": "badge",
+      "variant": "m",
+      "data": {
+        "items": [
+          {
+            "text": "1차",
+            "color": ""
+          },
+          {
+            "text": "TRPG",
+            "color": ""
+          },
+          {
+            "text": "DX3rd",
+            "color": ""
+          },
+          {
+            "text": "CoC",
+            "color": ""
+          },
+          {
+            "text": "inSANe",
+            "color": ""
+          },
+          {
+            "text": "마기카로기아",
+            "color": ""
+          },
+          {
+            "text": "시노비가미",
+            "color": ""
+          },
+          {
+            "text": "한국문학",
+            "color": ""
+          },
+          {
+            "text": "개발",
+            "color": ""
+          },
+          {
+            "text": "일상",
+            "color": ""
+          }
+        ]
+      },
+      "id": "b1776428283066"
+    },
+    {
+      "type": "deco",
+      "variant": "n",
+      "data": {
+        "type": "stars",
+        "count": 10,
+        "height": 60,
+        "padTop": 0,
+        "padBottom": 0,
+        "barStyle": "fade",
+        "decoText": ""
+      },
+      "id": "b1776429642053"
+    },
+    {
+      "type": "noti_ng",
+      "variant": "i",
+      "data": {
+        "noti": [
+          "",
+          "1차/TRPG 위주 본계",
+          "FUB free",
+          "",
+          "에이로맨틱 에이섹슈얼 논바이너리",
+          "",
+          "팔로워 수 300 넘지 않게 관리하고 있습니다.",
+          "블블 악의 없음. 재연결 괜찮습니다."
+        ],
+        "ng": [
+          "",
+          "대부분 사랑으로 흐린 눈 하고 넘어갑니다, 만",
+          "",
+          "인간 대 인간으로서의 무례한 언행",
+          "필터 없는 실사 RG18 이미지",
+          "빈도 높은 젠더퀴어혐오 발언",
+          "블루레이디 / 맛터 계열 계정의 많은 유입",
+          "",
+          "타깃을 지정한 수동저격 / 뒷담",
+          "충분히 친하지 않은 상태에서의 무례한 요구",
+          "견제, 인간관계 싸움, 피곤한 일들 일체",
+          "",
+          "시나리오의 과한 뉘앙스 스포일러"
+        ]
+      },
+      "id": "b1776428480184"
+    },
+    {
+      "type": "deco",
+      "variant": "n",
+      "data": {
+        "type": "stars",
+        "count": 8,
+        "height": 60,
+        "padTop": 0,
+        "padBottom": 0,
+        "barStyle": "fade",
+        "decoText": ""
+      },
+      "id": "b1776429877243"
+    },
+    {
+      "type": "richtext",
+      "variant": "v",
+      "data": {
+        "html": "TRPG 정말 좋아합니다.<div>DX3rd / 은닉 CoC 주력</div><div><br></div><div>기본적으로 자캐관계가 굉장히 많음 + 세션 많음 + 체력 없음 + 돈 없음 의 4중 콤보로 인해 관계 잘 챙겨드리지 못합니다.</div><div>더 놀고 싶으시면 언제든 말씀 주세요.</div><div><br></div><div>저에게 너무 많은 것을 바라시면 안 됩니다⋯⋯.</div><div><br></div><div><a href=\"https://docs.google.com/spreadsheets/d/11KN6OPDgnaXKDWuXcc3jvRWBGVO_NNJlbxlBMQHkYuw/edit?usp=sharing\">TRPG 성향표 (추후 추가)</a></div>"
+      },
+      "id": "b1776429895875"
+    },
+    {
+      "type": "divider",
+      "variant": "d",
+      "data": {},
+      "id": "b1776430199162"
+    },
+    {
+      "type": "page_break",
+      "variant": "a",
+      "data": {
+        "label": "Guest book",
+        "pageNum": 2
+      },
+      "id": "b1776430807284"
+    },
+    {
+      "type": "guestbook",
+      "variant": "b",
+      "data": {
+        "title": "Guest book",
+        "maxEntries": 50,
+        "allowAnon": false,
+        "postsPerPage": 10
+      },
+      "id": "b1776430824660"
+    }
+  ],
+  "themeP": "404040",
+  "themeBg": "fafafa",
+  "cursorId": "default",
+  "customCurUrl": "",
+  "cursorTip": "center",
+  "cursorSize": 32,
+  "bgMode": "color",
+  "bgImage": "",
+  "bgGrad": {
+    "from": "fafafa",
+    "to": "dedede",
+    "dir": "8"
+  },
+  "bgPattern": "none",
+  "bgBlur": 0,
+  "bgOpacity": 100,
+  "fontName": "Gowun Batang",
+  "fontUrl": "https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap",
+  "customFontData": "",
+  "scrollAnim": true,
+  "showMailbox": true,
+  "coverEnabled": true,
+  "coverText": "탭하여 입장",
+  "coverImage": "https://cdn.luv3r.me/og/cd0ab3b1fcd0.jpg",
+  "coverImageMobile": "https://cdn.luv3r.me/og/ad0dcd55c115.jpg",
+  "baseZoom": 100,
+  "baseFontSize": 100,
+  "pagePassword": "",
+  "faviconData": "https://cdn.luv3r.me/og/c28244c7ae74.png",
+  "pwaIcon": "",
+  "pwaName": "",
+  "ogTitle": "_toxytoxytoxy",
+  "ogDesc": "Don't let me",
+  "ogImage": "https://cdn.luv3r.me/og/da95d9da2218.jpg",
+  "pageWidth": 440,
+  "pageAlign": "center",
+  "pageMinHeight": "",
+  "pageMaxHeight": "",
+  "pageMobileMinH": "",
+  "pageMobileMaxH": "",
+  "pageHeightMode": "auto",
+  "pcEqMobile": false,
+  "bgmUrl": "",
+  "headerName": "_toxytoxytoxy",
+  "headerLogo": "https://cdn.luv3r.me/og/922cd0c09d9e.jpg",
+  "showHeader": true,
+  "layoutMode": "basic",
+  "tgPetEmoji": "🐣",
+  "cwPetEmoji": "🧸",
+  "mh2Menus": [
+    "홈",
+    "프로필",
+    "다이어리",
+    "사진첩",
+    "방명록"
+  ],
+  "tabBrowserTabs": [
+    {
+      "name": "홈",
+      "emoji": "🏠"
+    },
+    {
+      "name": "프로필",
+      "emoji": "👤"
+    },
+    {
+      "name": "갤러리",
+      "emoji": "🖼️"
+    }
+  ],
+  "i6ScreenHeight": 480,
+  "i6ScreenHeightM": 480,
+  "diaryV2Chapters": [
+    {
+      "name": "표지",
+      "date": "",
+      "weather": "☀️"
+    },
+    {
+      "name": "제1장",
+      "date": "",
+      "weather": "🌙"
+    }
+  ],
+  "mailboxLetters": [
+    {
+      "title": "첫 번째 편지",
+      "from": "나",
+      "date": ""
+    },
+    {
+      "title": "두 번째 편지",
+      "from": "나",
+      "date": ""
+    }
+  ],
+  "customNavItems": [
+    "홈",
+    "프로필",
+    "갤러리"
+  ],
+  "charSelectItems": [
+    {
+      "name": "주인공",
+      "emoji": "⚔️",
+      "title": ""
+    },
+    {
+      "name": "파트너",
+      "emoji": "🛡️",
+      "title": ""
+    }
+  ],
+  "photoAlbumItems": [
+    {
+      "name": "추억",
+      "date": "",
+      "emoji": "📸"
+    },
+    {
+      "name": "일상",
+      "date": "",
+      "emoji": "🌿"
+    }
+  ],
+  "chatroomItems": [
+    {
+      "name": "친구",
+      "emoji": "😊",
+      "preview": "안녕~",
+      "unread": 1
+    },
+    {
+      "name": "모임",
+      "emoji": "💜",
+      "preview": "내일 만나자!",
+      "unread": 0
+    }
+  ],
+  "vinylTracks": [
+    {
+      "name": "Side A",
+      "duration": "3:30",
+      "side": "A",
+      "emoji": "🎵"
+    },
+    {
+      "name": "Side B",
+      "duration": "4:15",
+      "side": "B",
+      "emoji": "🎶"
+    }
+  ],
+  "diary3Entries": [
+    {
+      "title": "오늘",
+      "icon": "✦",
+      "subtitle": ""
+    },
+    {
+      "title": "추억",
+      "icon": "✦",
+      "subtitle": ""
+    }
+  ],
+  "gardenSections": [
+    {
+      "name": "Rose",
+      "flower": "🌹"
+    },
+    {
+      "name": "Garden",
+      "flower": "🥀"
+    },
+    {
+      "name": "Bloom",
+      "flower": "🌷"
+    }
+  ],
+  "snowRoseSections": [
+    {
+      "name": "첫눈",
+      "flower": "❄️"
+    },
+    {
+      "name": "겨울 장미",
+      "flower": "🌹"
+    },
+    {
+      "name": "온기",
+      "flower": "🕯️"
+    }
+  ],
+  "s9Zones": [
+    {
+      "name": "NEXUS",
+      "icon": "🎮"
+    },
+    {
+      "name": "PRAXIS",
+      "icon": "⚡"
+    },
+    {
+      "name": "COMMERCE",
+      "icon": "💎"
+    }
+  ],
+  "playlistItems": [
+    {
+      "name": "좋아하는 노래",
+      "artist": "♫",
+      "emoji": "🎵"
+    },
+    {
+      "name": "플레이리스트",
+      "artist": "♪",
+      "emoji": "🎶"
+    }
+  ],
+  "tarotCards": [
+    {
+      "name": "The Fool",
+      "emoji": "🃏",
+      "meaning": ""
+    },
+    {
+      "name": "The Star",
+      "emoji": "⭐",
+      "meaning": ""
+    }
+  ]
+}

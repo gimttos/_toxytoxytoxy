@@ -1,9 +1,7 @@
-// 소개(About) 콘텐츠 — 단일 편집 지점.
-// 지금은 코드로 직접 고친다. (M4 어드민 콘솔에서 화면 편집으로 이관 예정.)
-// 아래 값만 네 걸로 바꾸면 /about 페이지가 그대로 따라온다.
+// 소개(About) 콘텐츠 — 단일 편집 지점. 코드로 직접 고친다.
+// 말투: ~요체 금지. 평어/~함/~음, 본인 프로필 어투 유지.
 
-export type AboutLink = { label: string; href: string };
-export type TendencyRow = { topic: string; mark: "○" | "△" | "✕"; note?: string };
+export type AboutLink = { label: string; href?: string }; // href 없으면 그냥 표기
 export type WishItem = { item: string; note?: string; got?: boolean };
 export type Oshi = { name: string; from: string; note?: string };
 
@@ -14,57 +12,112 @@ export type About = {
 		lines: string[];
 		links: AboutLink[];
 	};
-	byf: string[]; // Before You Follow — 팔로우 전 알아둘 것
-	dni: string[]; // Do Not Interact — 상호작용 사절
-	mute: string[]; // 뮤트 권장 태그/단어 (없으면 빈 배열)
-	tendency: {
-		legend: string;
-		rows: TendencyRow[];
+	quote: { text: string; source: string };
+	likes: string[];
+	trpg: {
+		note: string;
+		owned: string[];
+		gm: string[];
 	};
+	tendency: {
+		note: string;
+		embedUrl: string; // 구글 시트 /preview iframe
+		linkUrl: string; // 새 탭 원본
+	};
+	byf: string[];
+	dniNote: string;
+	dni: string[];
+	mute: string[];
 	wishlist: WishItem[];
 	oshi: Oshi[];
 };
 
+const SHEET_ID = "11KN6OPDgnaXKDWuXcc3jvRWBGVO_NNJlbxlBMQHkYuw";
+
 export const about: About = {
 	intro: {
-		name: "PAL3BLUED0T",
-		aka: ["토시", "@_toxytoxytoxy"],
+		name: "똣",
+		aka: ["@_toxytoxytoxy", "Don't let me"],
 		lines: [
-			"좋아하는 것들을 모아두는 사적인 아카이브.",
-			"TRPG 세션을 자주 다니고, 자캐와 사진을 모읍니다.",
+			"에이로맨틱 에이섹슈얼 논바이너리. 1차 / TRPG 위주 본계.",
+			"TRPG 정말 좋아함. DX3rd / 은닉 CoC 주력.",
+			"자캐관계 많음 + 세션 많음 + 체력 없음 + 돈 없음 4중 콤보라 관계를 잘 못 챙김. 그래도 더 놀고 싶으면 언제든 말 걸어도 됨.",
+			"나한테 너무 많은 걸 바라면 안 됨⋯⋯.",
 		],
-		links: [{ label: "X", href: "https://x.com/_toxytoxytoxy" }],
+		links: [
+			{ label: "X", href: "https://x.com/_toxytoxytoxy" },
+			{ label: "Discord — ttos7067" },
+			{ label: "오픈카톡", href: "https://open.kakao.com/o/sbG2hI9f" },
+			{ label: "luv3r profile", href: "https://toxytoxytoxy.luv3r.me/" },
+		],
+	},
+
+	quote: {
+		text: "그대가 옳다. 모든 것은 지나갈 것이다.\n다시 한 번 그대가 옳다. 그대와 나의 이야기는 언제고 끝날 것이다.\n그러나 그것은 천천히 올 것이고, 그대와 나는 고통스러울 것이다.",
+		source: "야만적인 앨리스씨",
+	},
+
+	likes: [
+		"1차",
+		"TRPG",
+		"DX3rd",
+		"CoC",
+		"inSANe",
+		"마기카로기아",
+		"시노비가미",
+		"한국문학",
+		"개발",
+		"일상",
+	],
+
+	trpg: {
+		note: "박치기 중인 룰은 같이 헤매도 괜찮으면 환영.",
+		owned: [
+			"DX3rd (EA·IC·LM·UG·HR·PE·IA·BC)",
+			"CoC",
+			"inSANe",
+			"마기카로기아",
+			"시노비가미",
+			"어둠 속의 칼날",
+			"아곤",
+			"던전 월드",
+			"은검의 스텔라나이츠 (은스나)",
+			"둘이서 수사 (둘수사)",
+		],
+		gm: [
+			"CoC",
+			"사이코로 픽션 (선호)",
+			"DX3rd (박치기 중)",
+			"둘이서 수사 (박치기 중)",
+		],
+	},
+
+	tendency: {
+		note: "성향표는 채우는 중. 큰 틀은 — 폭력·수위는 대체로 받는 편, 인세인은 PL로는 안 굴림, 일정은 보통 2개월 뒤까지만 구체화.",
+		embedUrl: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/preview`,
+		linkUrl: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?usp=sharing`,
 	},
 
 	byf: [
-		"잡담 많고 트윗이 잦아요.",
-		"세션 로그·후기를 종종 올립니다.",
-		"무단 펌·도용은 사절이에요.",
+		"1차 / TRPG 위주 본계.",
+		"FUB free.",
+		"팔로워 수 300 넘지 않게 관리하고 있음.",
+		"블블 악의 없음. 재연결 괜찮음.",
 	],
 
+	dniNote: "대부분 사랑으로 흐린 눈 하고 넘어가지만,",
 	dni: [
-		"혐오·차별 발언을 하는 분",
-		"제 창작물을 무단으로 사용하는 분",
+		"인간 대 인간으로서의 무례한 언행",
+		"필터 없는 실사 RG18 이미지",
+		"빈도 높은 젠더퀴어혐오 발언",
+		"블루레이디 / 맛터 계열 계정의 많은 유입",
+		"타깃 지정 수동저격 / 뒷담",
+		"충분히 친하지 않은 상태에서의 무례한 요구",
+		"견제, 인간관계 싸움, 피곤한 일 일체",
+		"시나리오의 과한 뉘앙스 스포일러",
 	],
 
 	mute: [],
-
-	tendency: {
-		legend: "○ 가능 · △ 협의 필요 · ✕ 불가",
-		rows: [
-			{ topic: "세션 모집 DM", mark: "○" },
-			{ topic: "합방·합작", mark: "△", note: "일정 협의" },
-			{ topic: "2차 창작", mark: "△", note: "사전에 한마디" },
-			{ topic: "상업적 이용", mark: "✕" },
-		],
-	},
-
-	wishlist: [
-		{ item: "여기에 갖고 싶은 것", note: "메모(선택)" },
-		{ item: "이미 받은 것 예시", got: true },
-	],
-
-	oshi: [
-		{ name: "최애 이름", from: "출처 작품", note: "한마디(선택)" },
-	],
+	wishlist: [],
+	oshi: [],
 };
