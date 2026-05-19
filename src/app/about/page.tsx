@@ -141,9 +141,9 @@ export default function AboutPage() {
 
 				{/* BYF · DNI · MUTE */}
 				<div className="border-t rule pt-10 grid gap-10 lg:grid-cols-[1fr_1.4fr]">
-					<List title="알아두기" en="BYF" items={a.byf} />
+					<List title="" en="BYF" items={a.byf} />
 					<div>
-						<p className="kicker">DNI · 사절</p>
+						<p className="kicker">DNI</p>
 						{a.dniNote && (
 							<p className="mt-3 text-sm text-muted">{a.dniNote}</p>
 						)}

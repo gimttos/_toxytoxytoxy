@@ -47,7 +47,7 @@ export function SiteFooter() {
 						© {site.since} {site.name}
 					</span>
 					<span className="flex items-center gap-2">
-						{site.issue} — Personal Archive
+						{site.issue} — @_toxytoxytoxy Archive
 						<Link
 							href="/admin"
 							className="text-muted hover:text-accent transition-colors"

@@ -46,7 +46,7 @@ export async function addRoomLink(input: {
 	const url = (input.url ?? "").trim();
 	if (!label || !url) return { ok: false, error: "라벨과 URL을 입력해 주세요." };
 	if (!/^https?:\/\//i.test(url))
-		return { ok: false, error: "URL은 http:// 또는 https:// 로 시작해야 해요." };
+		return { ok: false, error: "http:// 또는 https:// 로 시작하는 URL을 입력해 주세요." };
 	await getDb()
 		.prepare(
 			`INSERT INTO room_links (label, url, system, note, created_at)

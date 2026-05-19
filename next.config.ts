@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
 	turbopack: {
 		root: import.meta.dirname,
 	},
+	experimental: {
+		// 서버 액션 본문 기본 한도는 1MB — 사진/배너 업로드가 그걸 넘어 죽으면
+		// 라우터까지 멈춰서 이후 링크 이동도 안 됨. 갤러리 다중 업로드 고려해 넉넉히.
+		serverActions: {
+			bodySizeLimit: "25mb",
+		},
+	},
 };
 
 export default nextConfig;

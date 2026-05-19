@@ -39,10 +39,9 @@ export const about: About = {
 		name: "똣",
 		aka: ["@_toxytoxytoxy", "Don't let me"],
 		lines: [
-			"에이로맨틱 에이섹슈얼 논바이너리. 1차 / TRPG 위주 본계.",
-			"TRPG 정말 좋아함. DX3rd / 은닉 CoC 주력.",
-			"자캐관계 많음 + 세션 많음 + 체력 없음 + 돈 없음 4중 콤보라 관계를 잘 못 챙김. 그래도 더 놀고 싶으면 언제든 말 걸어도 됨.",
-			"나한테 너무 많은 걸 바라면 안 됨⋯⋯.",
+			"에이로맨틱 에이섹슈얼 논바이너리, 1차 / TRPG 위주 본계",
+			"DX3rd / 은닉 CoC 주력",
+			"FUB free",
 		],
 		links: [
 			{ label: "X", href: "https://x.com/_toxytoxytoxy" },
@@ -62,18 +61,15 @@ export const about: About = {
 		"TRPG",
 		"DX3rd",
 		"CoC",
-		"inSANe",
-		"마기카로기아",
-		"시노비가미",
 		"한국문학",
 		"개발",
 		"일상",
 	],
 
 	trpg: {
-		note: "박치기 중인 룰은 같이 헤매도 괜찮으면 환영.",
+		note: "",
 		owned: [
-			"DX3rd (EA·IC·LM·UG·HR·PE·IA·BC)",
+			"DX3rd",
 			"CoC",
 			"inSANe",
 			"마기카로기아",
@@ -81,31 +77,31 @@ export const about: About = {
 			"어둠 속의 칼날",
 			"아곤",
 			"던전 월드",
-			"은검의 스텔라나이츠 (은스나)",
-			"둘이서 수사 (둘수사)",
+			"은검의 스텔라나이츠",
+			"둘이서 수사",
 		],
 		gm: [
 			"CoC",
-			"사이코로 픽션 (선호)",
-			"DX3rd (박치기 중)",
-			"둘이서 수사 (박치기 중)",
+			"사이코로 픽션 전반",
+			"DX3rd",
+			"둘이서 수사",
 		],
 	},
 
 	tendency: {
-		note: "성향표는 채우는 중. 큰 틀은 — 폭력·수위는 대체로 받는 편, 인세인은 PL로는 안 굴림, 일정은 보통 2개월 뒤까지만 구체화.",
+		note: "자세한 것은 스프레드 시트 참고해 주세요!",
 		embedUrl: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/preview`,
 		linkUrl: `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?usp=sharing`,
 	},
 
 	byf: [
-		"1차 / TRPG 위주 본계.",
-		"FUB free.",
-		"팔로워 수 300 넘지 않게 관리하고 있음.",
-		"블블 악의 없음. 재연결 괜찮음.",
+		"1차 / TRPG 위주 본계",
+		"FUB free",
+		"팔로워 수 300 넘지 않게 관리하고 있습니다.",
+		"블블 악의 없습니다. 재연결도 Ok!",
 	],
 
-	dniNote: "대부분 사랑으로 흐린 눈 하고 넘어가지만,",
+	dniNote: "대부분 팔안굽을 합니다만,",
 	dni: [
 		"인간 대 인간으로서의 무례한 언행",
 		"필터 없는 실사 RG18 이미지",

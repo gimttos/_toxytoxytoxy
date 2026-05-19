@@ -19,7 +19,7 @@ export async function unlockAdmin(formData: FormData) {
 	const ok = await tryUnlock(String(formData.get("passphrase") ?? ""));
 	revalidatePath("/admin");
 	if (!ok)
-		redirect(`/admin?err=${encodeURIComponent("패스프레이즈가 맞지 않아요.")}`);
+		redirect(`/admin?err=${encodeURIComponent("패스워드가 맞지 않아요.")}`);
 	redirect("/admin?owner=1");
 }
 
