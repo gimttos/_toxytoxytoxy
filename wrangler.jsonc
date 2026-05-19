@@ -48,6 +48,14 @@
 			"remote": true
 		}
 	],
+	// R2 — 갤러리/캐릭터/배너 이미지 (M3~). 버킷은 오너가 한 번 생성:
+	//   npx wrangler r2 bucket create pal3bluedot-media
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "pal3bluedot-media"
+		}
+	],
 	"observability": {
 		"enabled": true
 	},

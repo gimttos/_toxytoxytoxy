@@ -18,3 +18,8 @@ export function getEnv(): CloudflareEnv & ExtraEnv {
 export function getDb(): D1Database {
 	return getEnv().DB;
 }
+
+// R2 — 갤러리/캐릭터/배너 이미지 바이너리. 메타데이터는 D1.
+export function getMedia(): R2Bucket {
+	return getEnv().MEDIA;
+}

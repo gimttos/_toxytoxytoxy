@@ -48,31 +48,41 @@ Therefore `npm run dev` is intentionally `cross-env NODE_OPTIONS=--max-old-space
 - Access bindings in server code via `getCloudflareContext()` from `@opennextjs/cloudflare` — not via `process.env`. This works in `next dev` only because `next.config.ts` calls `initOpenNextCloudflareForDev()`.
 - Local secrets/env go in **`.dev.vars`** (gitignored); production secrets are set with `wrangler secret`. `compatibility_flags` includes `nodejs_compat` — Node built-ins are available in the Worker.
 - For persistence on this project, prefer Cloudflare-native: **D1** (guestbook entries, schedule events), **R2** (uploaded otaku images), **KV** (small config/flags).
-- **D1 is configured** (`d1_databases` → binding `DB`, name `pal3bluedot-db`). `database_id` in `wrangler.jsonc` is a placeholder until the owner provisions the remote DB — see "Owner setup" below. Migrations live in `migrations/`, applied with `wrangler d1 migrations apply`.
+- **D1 provisioned** (`d1_databases` → binding `DB`, name `pal3bluedot-db`, real `database_id` filled). Migrations in `migrations/` (`0001_guestbook`, `0002_gallery`), applied with `wrangler d1 migrations apply`. (Cloudflare's dashboard D1 integration also auto-added a second `pal3bluedot_db` binding — harmless; app code only uses `DB`.)
+- **R2 configured** (`r2_buckets` → binding `MEDIA`, bucket `pal3bluedot-media`). Image bytes go to R2; metadata to D1. R2 objects are **not** public — they are served through the `app/media/[...key]/route.ts` GET handler. The owner must create the bucket once — see "Owner setup".
 
 ## Owner setup (one-time, needs the owner's Cloudflare login)
 
 These need `wrangler` auth and must be run by the owner (e.g. type `! <cmd>` in the session). Local-only commands need no login.
 
+Done already: D1 created (`pal3bluedot-db`, id in `wrangler.jsonc`), `0001` applied local+remote, `OWNER_SECRET` set local+production.
+
+After **adding a new migration**, apply it both places:
 ```bash
-npx wrangler d1 create pal3bluedot-db          # then paste the printed database_id into wrangler.jsonc
-npx wrangler d1 migrations apply pal3bluedot-db --local     # local dev DB
-npx wrangler d1 migrations apply pal3bluedot-db --remote    # production DB (needs login)
-npm run cf-typegen                              # after the id change
+npx wrangler d1 migrations apply pal3bluedot-db --local      # local dev DB
+npx wrangler d1 migrations apply pal3bluedot-db --remote     # production DB (needs login)
 ```
 
-Owner auth secret — local: add `OWNER_SECRET="<passphrase>"` to `.dev.vars` (gitignored). Production: `npx wrangler secret put OWNER_SECRET`. Optional `GUESTBOOK_SALT` likewise (falls back to a constant if unset — fine, it's spam-only, not security).
+For **R2 (gallery, M3)** — create the bucket once:
+```bash
+npx wrangler r2 bucket create pal3bluedot-media              # needs login
+npx wrangler d1 migrations apply pal3bluedot-db --local      # applies 0002_gallery
+npx wrangler d1 migrations apply pal3bluedot-db --remote
+```
 
-## Current structure (M2 — guestbook live)
+After editing `wrangler.jsonc` bindings: `npm run cf-typegen`. Owner auth secret — local: `OWNER_SECRET="<passphrase>"` in `.dev.vars` (gitignored); production: `npx wrangler secret put OWNER_SECRET`. Optional `GUESTBOOK_SALT` likewise (falls back to a constant — spam-only, not security-critical).
+
+## Current structure (M3 — guestbook + gallery live)
 
 - `src/lib/site.ts` — **single source of truth** for site identity and the nav list. Adding/moving a section = editing the `nav` array here; header, footer, home "목차" all render from it. `NavItem.status: "live" | "soon"` and `NavItem.admin?: boolean` (admin items are filtered out of the public UI). Components import **`publicNav`** (admin-excluded), not `nav`; `page-shell` uses full `nav` for lookup.
 - `src/app/globals.css` — the design system. All color/font tokens live in the `@theme inline` block (paper / ink / muted / line / accent; Fraunces + Nanum Myeongjo + IBM Plex Sans KR + IBM Plex Mono). Reusable classes: `.kicker`, `.rule`, `.display`, `.display-en`, `.ticks`, `.dot`, `.rise` (the old `.grain` was removed in the white/blue redesign). Change the look here, not in components. Design polish is deferred to M5 — keep new sections functional and on-brand with these classes, don't over-style.
 - Fonts load via a Google Fonts `<link>` in `src/app/layout.tsx` (not `next/font`) for reliable Korean glyph coverage — swapping fonts means editing that URL **and** the `--font-*` tokens.
 - `src/components/` — `site-header` (masthead + nav), `site-footer` (colophon), `page-shell` (`PageHeader` + `ComingSoon` for stub sections).
-- `src/lib/db.ts` — the **only** place that calls `getCloudflareContext()`. `getEnv()` (typed `CloudflareEnv` + optional secrets) and `getDb()` (D1). New server data access goes through here.
+- `src/lib/db.ts` — the **only** place that calls `getCloudflareContext()`. `getEnv()` (typed `CloudflareEnv` + optional secrets), `getDb()` (D1), `getMedia()` (R2). New server data access goes through here.
 - `src/lib/owner.ts` — owner auth (passphrase `OWNER_SECRET` → httpOnly signed cookie). `isOwner()` / `tryUnlock()` / `lock()`. M2-interim; M3 builds on it. Reuse it for any owner-gated feature — don't reinvent.
-- `src/lib/guestbook.ts` — guestbook D1 layer (list/create/setHidden/deleteEntry, ip-hash rate limit, validation). `migrations/0001_guestbook.sql` is the schema.
-- `/guestbook` is **live** (`force-dynamic`, Server Component + `actions.ts` Server Actions). `/characters`, `/gallery`, `/sessions`, `/banners`, `/log`, `/schedule`, `/about` are intentionally-designed "준비 중" stubs (PageHeader + ComingSoon) for later milestones.
+- `src/lib/guestbook.ts` — guestbook D1 layer (list/create/setHidden/deleteEntry, ip-hash rate limit, validation). `migrations/0001_guestbook.sql`.
+- `src/lib/gallery.ts` — gallery layer: albums/images in D1, image bytes in R2 via `getMedia()`. `addImage`/`deleteImage` keep R2 and D1 in sync and maintain `albums.cover_image_id`. `migrations/0002_gallery.sql`. `app/media/[...key]/route.ts` streams R2 objects (cache-immutable).
+- **Live** (`force-dynamic` Server Component + sibling `actions.ts`): `/guestbook`, `/gallery` (+ `/gallery/[slug]`). Owner-only create/upload/delete guarded by `isOwner()`. Stubs (PageHeader + ComingSoon): `/characters`, `/sessions`, `/banners`, `/log`, `/schedule`, `/about`.
 
 ## Roadmap (agreed with owner)
 
@@ -80,7 +90,7 @@ Full feature design is in `.claude/plans/wobbly-dreaming-tower.md` (approved). O
 
 - **M1 ✅** design system + banner + nav skeleton
 - **M2 ✅** guestbook (D1) — public sign, honeypot + per-IP rate limit, interim owner auth (passphrase → signed cookie) for hide/delete
-- **M3** owner auth (formalize) + characters (profiles · PC sheets · relations) + gallery (R2 · albums · tags · 굿즈) + about (성향표 · BYF/DNI · 위시리스트)
+- **M3** (in progress) gallery ✅ skeleton (R2 · albums · tags · 굿즈, owner upload) · next: characters (profiles · PC sheets · relations) + about (성향표 · BYF/DNI · 위시리스트). Owner auth reuses `src/lib/owner.ts` (no rebuild needed).
 - **M4** sessions (TRPG 기록부 + log archive, per-log public/private) + banners/links exchange + log (갱신·잡담) + 소품 (visitor counter · 한마디 · BGM) + admin console (room links · session notes · ops)
 - **M5** schedule (Google private `.ics` polled by Worker cron + private memo layer) + full **design pass** + polish
 
