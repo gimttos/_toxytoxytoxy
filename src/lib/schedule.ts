@@ -63,6 +63,19 @@ function unescapeText(v: string): string {
 		.replace(/\\\\/g, "\\");
 }
 
+// Google Calendar 가 description 끝에 자동으로 붙이는 boilerplate 제거.
+// "This is an event reminder" 와 dash separator(::~:~) 뒤는 다 잘라낸다.
+function sanitizeDesc(s: string | null): string | null {
+	if (!s) return s;
+	let out = s;
+	const reminderIdx = out.indexOf("This is an event reminder");
+	if (reminderIdx !== -1) out = out.slice(0, reminderIdx);
+	const dashIdx = out.indexOf("-::~:~");
+	if (dashIdx !== -1) out = out.slice(0, dashIdx);
+	out = out.trim();
+	return out || null;
+}
+
 // DTSTART 값 → {ms, allDay}. Z=UTC, 그 외(부동/TZID)는 Asia/Seoul 벽시계로 가정.
 function parseDt(value: string): { ms: number; allDay: boolean } | null {
 	const dateOnly = /^(\d{4})(\d{2})(\d{2})$/.exec(value);
@@ -100,7 +113,7 @@ export function parseIcs(text: string): ParsedEvent[] {
 				events.push({
 					uid: cur.uid ?? null,
 					summary: cur.summary ?? null,
-					description: cur.description ?? null,
+					description: sanitizeDesc(cur.description ?? null),
 					location: cur.location ?? null,
 					start_ms: st.ms,
 					end_ms: en ? en.ms : null,
@@ -148,25 +161,13 @@ export function parseIcs(text: string): ParsedEvent[] {
 // ── 가져오기 + 캐시 ─────────────────────────────────────
 
 export type SyncState =
-	| { configured: false; debug: { rawType: string; rawLen: number; trimmedLen: number; envKeys: string[] } }
+	| { configured: false }
 	| { configured: true; ok: true; count: number }
 	| { configured: true; ok: false; error: string };
 
 export async function ensureFresh(force = false): Promise<SyncState> {
-	const env = getEnv();
-	const raw = env.GCAL_ICS_URL;
-	const url = (raw ?? "").trim();
-	if (!url) {
-		return {
-			configured: false,
-			debug: {
-				rawType: typeof raw,
-				rawLen: typeof raw === "string" ? raw.length : 0,
-				trimmedLen: url.length,
-				envKeys: Object.keys(env as object).sort(),
-			},
-		};
-	}
+	const url = (getEnv().GCAL_ICS_URL ?? "").trim();
+	if (!url) return { configured: false };
 
 	if (!force) {
 		const last = Number((await getMeta(SYNC_KEY)) ?? "0");

@@ -2,7 +2,7 @@
 // 색/폰트는 src/app/globals.css 의 @theme 토큰에서 바꾼다.
 
 export const site = {
-	name: "@_toxytoxytoxy",
+	name: "_toxytoxytoxy",
 	// 브라우저 탭 제목 보조 (SEO 메타용)
 	tagline: "TOXY TOXY TOXY",
 	taglineKo: "아카이브",

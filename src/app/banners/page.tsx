@@ -78,7 +78,7 @@ export default async function BannersPage({
 									</div>
 									<div className="min-w-0">
 										<p className="kicker">
-											HTML — 네 갠홈에 붙여넣기
+											HTML — 갠홈에 붙여넣기
 										</p>
 										<textarea
 											readOnly
