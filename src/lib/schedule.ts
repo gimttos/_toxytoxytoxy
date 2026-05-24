@@ -148,13 +148,25 @@ export function parseIcs(text: string): ParsedEvent[] {
 // ── 가져오기 + 캐시 ─────────────────────────────────────
 
 export type SyncState =
-	| { configured: false }
+	| { configured: false; debug: { rawType: string; rawLen: number; trimmedLen: number; envKeys: string[] } }
 	| { configured: true; ok: true; count: number }
 	| { configured: true; ok: false; error: string };
 
 export async function ensureFresh(force = false): Promise<SyncState> {
-	const url = getEnv().GCAL_ICS_URL;
-	if (!url) return { configured: false };
+	const env = getEnv();
+	const raw = env.GCAL_ICS_URL;
+	const url = (raw ?? "").trim();
+	if (!url) {
+		return {
+			configured: false,
+			debug: {
+				rawType: typeof raw,
+				rawLen: typeof raw === "string" ? raw.length : 0,
+				trimmedLen: url.length,
+				envKeys: Object.keys(env as object).sort(),
+			},
+		};
+	}
 
 	if (!force) {
 		const last = Number((await getMeta(SYNC_KEY)) ?? "0");

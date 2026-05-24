@@ -122,14 +122,23 @@ export default async function SchedulePage({
 								구글 캘린더가 아직 연결되지 않았어요.
 							</p>
 							{owner && (
-								<ol className="mt-4 grid gap-1.5 text-sm text-muted list-decimal pl-5">
-									<li>구글 캘린더 → 설정 → 내 캘린더 설정 → 해당 캘린더</li>
-									<li>“캘린더 통합” → <b>iCal 형식의 비공개 주소</b> 복사</li>
-									<li>
-										<code className="text-ink">GCAL_ICS_URL</code> 시크릿으로
-										등록 (아래 안내) 후 새로고침
-									</li>
-								</ol>
+								<>
+									<ol className="mt-4 grid gap-1.5 text-sm text-muted list-decimal pl-5">
+										<li>구글 캘린더 → 설정 → 내 캘린더 설정 → 해당 캘린더</li>
+										<li>“캘린더 통합” → <b>iCal 형식의 비공개 주소</b> 복사</li>
+										<li>
+											<code className="text-ink">GCAL_ICS_URL</code> 시크릿으로
+											등록 (아래 안내) 후 새로고침
+										</li>
+									</ol>
+									<div className="mt-5 border-t rule pt-4 text-xs text-muted font-mono whitespace-pre-wrap break-all">
+										<p className="kicker text-accent">debug (owner only)</p>
+										<p>typeof: {state.debug.rawType}</p>
+										<p>raw len: {state.debug.rawLen}</p>
+										<p>trimmed len: {state.debug.trimmedLen}</p>
+										<p>env keys: {state.debug.envKeys.join(", ")}</p>
+									</div>
+								</>
 							)}
 						</div>
 					) : events.length === 0 ? (
@@ -258,7 +267,7 @@ export default async function SchedulePage({
 							</ul>
 						)}
 						<p className="mt-4 kicker text-muted">
-							메모는 너만 봐요. 공개 안 됨.
+							메모는 오너만 확인 가능.
 						</p>
 					</aside>
 				)}
