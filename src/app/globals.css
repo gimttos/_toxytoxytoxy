@@ -34,9 +34,9 @@
 	--color-ink: #2a2733;
 	--color-muted: #7a7585;
 	--color-line: #ddd2e5;
-	--color-accent: #9b8ac4;      /* 깊은 라벤더 — 1순위 (액션·hover·active) */
-	--color-accent-2: #9fbda3;    /* 세이지 — 2순위 (포인트·날짜·new 마크) */
-	--color-on-accent: #ffffff;   /* 9b8ac4 위 콘트라스트 확인 후 부족하면 ink 폴백 */
+	--color-accent: #9fbda3;      /* 세이지 — 1순위 (액션·hover·active) */
+	--color-accent-2: #9b8ac4;    /* 깊은 라벤더 — 2순위 (포인트·날짜·new 마크) */
+	--color-on-accent: #2a2733;   /* 세이지가 옅어 흰글자 대비 약함 — ink 사용 */
 
 	--font-sans: "GounBatang", "Pretendard Variable", "Pretendard", system-ui, sans-serif;
 	--font-hand: "OngleipParkDahyeon", "GounBatang", sans-serif;
