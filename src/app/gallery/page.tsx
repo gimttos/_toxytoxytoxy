@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { listAlbums } from "@/lib/gallery";
 import { isOwner } from "@/lib/owner";
 import { createAlbumAction, deleteAlbumAction } from "./actions";
@@ -19,6 +20,7 @@ export default async function GalleryPage({
 	const albums = await listAlbums();
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/gallery">
 		<div className="relative">
 			<PageHeader href="/gallery" />
 
@@ -146,5 +148,6 @@ export default async function GalleryPage({
 				back="/gallery"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

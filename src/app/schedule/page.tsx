@@ -9,6 +9,7 @@ import {
 } from "@/lib/schedule";
 import { isOwner } from "@/lib/owner";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import {
 	refreshScheduleAction,
 	addMemoAction,
@@ -88,6 +89,7 @@ export default async function SchedulePage({
 	}
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/schedule">
 		<div className="relative">
 			<PageHeader href="/schedule" />
 
@@ -268,5 +270,6 @@ export default async function SchedulePage({
 				back="/schedule"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

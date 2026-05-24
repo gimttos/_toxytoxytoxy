@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { listEntries, MAX_NAME, MAX_BODY, MOODS } from "@/lib/guestbook";
 import { isOwner } from "@/lib/owner";
 import { signGuestbook, hideEntry, removeEntry } from "./actions";
@@ -27,6 +28,7 @@ export default async function GuestbookPage({
 	const entries = await listEntries({ owner });
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/guestbook">
 		<div className="relative">
 			<PageHeader href="/guestbook" />
 
@@ -261,5 +263,6 @@ export default async function GuestbookPage({
 				back="/guestbook"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

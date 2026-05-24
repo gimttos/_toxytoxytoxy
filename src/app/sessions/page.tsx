@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { listSessions } from "@/lib/sessions";
 import { isOwner } from "@/lib/owner";
 import { createSessionAction } from "./actions";
@@ -22,6 +23,7 @@ export default async function SessionsPage({
 	const sessions = await listSessions();
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/sessions">
 		<div className="relative">
 			<PageHeader href="/sessions" />
 
@@ -127,5 +129,6 @@ export default async function SessionsPage({
 				back="/sessions"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

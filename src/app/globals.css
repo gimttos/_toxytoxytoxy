@@ -1,29 +1,46 @@
 @import "tailwindcss";
 
-/* 손글씨 폰트 — 인천교육 jaram (noonfonts via jsdelivr) */
+/* ── 본문 고딕 — GounBatang (noonfonts via jsdelivr) ──────────── */
 @font-face {
-	font-family: "IncheonEducation";
-	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/iceJaram-Rg.woff2") format("woff2");
+	font-family: "GounBatang";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff") format("woff");
+	font-weight: 400;
+	font-display: swap;
+}
+@font-face {
+	font-family: "GounBatang";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Bold.woff") format("woff");
+	font-weight: 700;
+	font-display: swap;
+}
+
+/* ── 손글씨 — Ownglyph 박다현체 (noonfonts via jsdelivr) ──────── */
+@font-face {
+	font-family: "OngleipParkDahyeon";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2") format("woff2");
 	font-weight: normal;
 	font-display: swap;
 }
 
+/* Homemade Apple (배경 장식용 영어 손글씨) 은 layout.tsx 의 Google Fonts <link> 로 로드. */
+
 /* ─────────────────────────────────────────────────────────────
    디자인 토큰 — 색/폰트는 전부 여기서 바꾼다.
-   무드: 은은한 아이보리 · 따뜻한 차콜 · 세이지 그린 + 연보라 악센트
+   무드: 라벤더 워시 베이스 + 깊은 라벤더 액션 + 세이지 보조 악센트
    ───────────────────────────────────────────────────────────── */
 @theme inline {
-	--color-paper: #f9f5ea;
-	--color-paper-2: #f1ebda;
-	--color-ink: #2d2a24;
-	--color-muted: #7a766b;
-	--color-line: #e5decc;
-	--color-accent: #9fbda3;      /* 세이지 그린 — 1순위 악센트 */
-	--color-accent-2: #d6cae3;    /* 연보라 — 2순위 악센트 */
-	--color-on-accent: #2d2a24;   /* 악센트가 옅어서 글자는 어둡게 */
+	--color-paper: #f5f0f8;
+	--color-paper-2: #ece4f1;
+	--color-ink: #2a2733;
+	--color-muted: #7a7585;
+	--color-line: #ddd2e5;
+	--color-accent: #9b8ac4;      /* 깊은 라벤더 — 1순위 (액션·hover·active) */
+	--color-accent-2: #9fbda3;    /* 세이지 — 2순위 (포인트·날짜·new 마크) */
+	--color-on-accent: #ffffff;   /* 9b8ac4 위 콘트라스트 확인 후 부족하면 ink 폴백 */
 
-	--font-sans: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
-	--font-hand: "IncheonEducation", "Pretendard Variable", sans-serif;
+	--font-sans: "GounBatang", "Pretendard Variable", "Pretendard", system-ui, sans-serif;
+	--font-hand: "OngleipParkDahyeon", "GounBatang", sans-serif;
+	--font-deco: "Homemade Apple", cursive;
 
 	--ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -63,7 +80,7 @@ body {
 		border-color: var(--color-line);
 	}
 
-	/* 정체성 마크 — 세이지 닷 */
+	/* 정체성 마크 — 라벤더 닷 */
 	.dot {
 		display: inline-block;
 		width: 0.4rem;
@@ -73,7 +90,7 @@ body {
 		vertical-align: middle;
 	}
 
-	/* 큰 한글 디스플레이 — 본문 고딕 굵게로 약화 (Phase B 에서 점진 제거 예정) */
+	/* 큰 한글 디스플레이 — 본문 고딕 굵게로 약화 */
 	.display {
 		font-family: var(--font-sans);
 		font-weight: 700;
@@ -81,7 +98,7 @@ body {
 		letter-spacing: -0.01em;
 	}
 
-	/* 라틴 디스플레이도 같은 sans (Phase B 에서 점진 제거 예정) */
+	/* 라틴 디스플레이도 같은 sans */
 	.display-en {
 		font-family: var(--font-sans);
 		font-weight: 600;

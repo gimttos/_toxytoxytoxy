@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { listMyBanners, listFriendLinks, embedSnippet } from "@/lib/banners";
 import { isOwner } from "@/lib/owner";
 import {
@@ -36,6 +37,7 @@ export default async function BannersPage({
 	const base = `${proto}://${host}`;
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/banners">
 		<div className="relative">
 			<PageHeader href="/banners" />
 
@@ -265,5 +267,6 @@ export default async function BannersPage({
 				back="/banners"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

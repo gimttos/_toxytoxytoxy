@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { listPosts, type PostKind } from "@/lib/log";
 import { isOwner } from "@/lib/owner";
 import { createPostAction, deletePostAction } from "./actions";
@@ -36,6 +37,7 @@ export default async function LogPage({
 	const posts = await listPosts(kind);
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/log">
 		<div className="relative">
 			<PageHeader href="/log" />
 
@@ -173,5 +175,6 @@ export default async function LogPage({
 				back="/log"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

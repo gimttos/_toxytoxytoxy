@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getAlbumBySlug, listImages } from "@/lib/gallery";
 import { isOwner } from "@/lib/owner";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { uploadImagesAction, deleteImageAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,7 @@ export default async function AlbumPage({
 	if (!album) notFound();
 
 	const owner = await isOwner();
+	const edit = sp.edit === "1";
 	const all = await listImages(album.id);
 	const allTags = [...new Set(all.flatMap((i) => tagList(i.tags)))].sort();
 	const activeTag = sp.tag?.toLowerCase();
@@ -43,6 +45,7 @@ export default async function AlbumPage({
 		: all;
 
 	return (
+		<StickerRoot edit={edit} back={`/gallery/${slug}`}>
 		<div className="relative">
 			<header className="border-b rule">
 				<div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-12 sm:py-16">
@@ -121,6 +124,11 @@ export default async function AlbumPage({
 										loading="lazy"
 										className="w-full h-auto block"
 									/>
+									<PageStickers
+										surface={`image:${img.id}`}
+										edit={edit}
+										back={`/gallery/${slug}`}
+									/>
 								</div>
 								{(img.caption || tagList(img.tags).length > 0) && (
 									<div className="mt-2">
@@ -196,9 +204,10 @@ export default async function AlbumPage({
 
 			<PageStickers
 				surface={`page:/gallery/${slug}`}
-				edit={sp.edit === "1"}
+				edit={edit}
 				back={`/gallery/${slug}`}
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

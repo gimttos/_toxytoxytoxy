@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
+import { DecoWords, type DecoWord } from "@/components/deco-words";
 import { about } from "@/lib/about";
 
 export const metadata: Metadata = { title: "소개" };
 export const dynamic = "force-dynamic";
+
+// 배경 장식 영어 단어 — Homemade Apple 손글씨로 옅게.
+const ABOUT_DECO: DecoWord[] = [
+	{ text: "We are made of star stuff.", x: "3%",  y: "4%",  rot: -3, size: "3.2rem", opacity: 0.1 },
+	{ text: "We are made of star stuff.", x: "10%", y: "92%", rot: 2,  size: "2.6rem", opacity: 0.09 },
+];
 
 function Chips({ items }: { items: string[] }) {
 	return (
@@ -47,7 +55,9 @@ export default async function AboutPage({
 	const sp = await searchParams;
 	const a = about;
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/about">
 		<div className="relative">
+			<DecoWords words={ABOUT_DECO} />
 			<PageHeader href="/about" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20 grid gap-16">
@@ -233,5 +243,6 @@ export default async function AboutPage({
 				back="/about"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

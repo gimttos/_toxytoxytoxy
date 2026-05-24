@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
 import { PageStickers } from "@/components/page-stickers";
+import { StickerRoot } from "@/components/sticker-root";
 import { listCharacters } from "@/lib/characters";
 import { isOwner } from "@/lib/owner";
 import { createCharacterAction } from "./actions";
@@ -19,6 +20,7 @@ export default async function CharactersPage({
 	const chars = await listCharacters();
 
 	return (
+		<StickerRoot edit={sp.edit === "1"} back="/characters">
 		<div className="relative">
 			<PageHeader href="/characters" />
 
@@ -125,5 +127,6 @@ export default async function CharactersPage({
 				back="/characters"
 			/>
 		</div>
+		</StickerRoot>
 	);
 }

@@ -1,16 +1,17 @@
 "use client";
 
 // 스티커 오버레이 — readonly 모드는 그냥 절대좌표 렌더,
-// editable(꾸미기 모드 + 오너) 일 때만 드래그·크기·회전·삭제·라이브러리 트레이 노출.
+// editable(꾸미기 모드 + 오너) 일 때만 드래그·크기·회전·삭제 노출.
+// 라이브러리 트레이는 sticker-tray.tsx 가 페이지에 1개만 마운트.
 // 상위 컨테이너에 position: relative 가 필요.
 
 import { useEffect, useRef, useState } from "react";
-import type { PlacementCard, StickerLib } from "@/lib/stickers";
+import type { PlacementCard } from "@/lib/stickers";
 import {
-	addPlacementAction,
 	updatePlacementAction,
 	removePlacementAction,
 } from "@/app/admin/actions";
+import { useStickerSurface } from "./sticker-surface-context";
 
 type Pos = { x_pct: number; y_pct: number; w_pct: number; rot: number };
 type LocalPlacement = PlacementCard & Pos;
@@ -36,16 +37,16 @@ async function commit(
 export function StickerOverlay({
 	surface,
 	placements,
-	library,
 	editable,
 	back,
 }: {
 	surface: string;
 	placements: PlacementCard[];
-	library: StickerLib[];
 	editable: boolean;
 	back: string;
 }) {
+	const ctx = useStickerSurface();
+
 	// 서버 상태로 초기화. revalidate 후 새 props 가 오면 동기화.
 	const [items, setItems] = useState<LocalPlacement[]>(() =>
 		placements.map((p) => ({ ...p })),
@@ -54,11 +55,15 @@ export function StickerOverlay({
 	const overlayRef = useRef<HTMLDivElement>(null);
 
 	// 서버가 revalidate 후 새 placements 를 내려주면 로컬도 동기화.
-	// (드래그 중에는 이미 pointerup 에서 commit 끝났으므로 덮어써도 동일 결과.)
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setItems(placements.map((p) => ({ ...p })));
 	}, [placements]);
+
+	// editable 모드에서 이 surface 를 컨텍스트에 등록 (첫 등록이 default active).
+	useEffect(() => {
+		if (editable && ctx) ctx.registerSurface(surface);
+	}, [editable, ctx, surface]);
 
 	// ── readonly ─────────────────────────────────────────
 	if (!editable) {
@@ -89,13 +94,20 @@ export function StickerOverlay({
 
 	// ── editable ────────────────────────────────────────
 
+	const isActive = ctx?.activeSurface === surface;
+
 	function rectOf(): DOMRect | null {
 		return overlayRef.current?.getBoundingClientRect() ?? null;
+	}
+
+	function focusSurface() {
+		if (ctx) ctx.setActiveSurface(surface);
 	}
 
 	function startDrag(e: React.PointerEvent, id: number) {
 		e.preventDefault();
 		setFocusId(id);
+		focusSurface();
 		const rect = rectOf();
 		if (!rect) return;
 		(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
@@ -145,20 +157,6 @@ export function StickerOverlay({
 		commit(id, patch, back);
 	}
 
-	async function add(stickerId: number) {
-		const fd = new FormData();
-		fd.set("stickerId", String(stickerId));
-		fd.set("surface", surface);
-		fd.set("back", back);
-		// 중앙에 기본 크기로.
-		fd.set("x_pct", "50");
-		fd.set("y_pct", "50");
-		fd.set("w_pct", "20");
-		fd.set("rot", "0");
-		fd.set("z", "0");
-		await addPlacementAction(fd);
-	}
-
 	async function remove(id: number) {
 		const fd = new FormData();
 		fd.set("id", String(id));
@@ -170,7 +168,19 @@ export function StickerOverlay({
 
 	return (
 		<>
-			<div ref={overlayRef} className="absolute inset-0 overflow-hidden">
+			<div
+				ref={overlayRef}
+				className="absolute inset-0 overflow-hidden"
+				style={{
+					outline: isActive ? "1.5px dashed var(--color-accent)" : "none",
+					outlineOffset: "-2px",
+				}}
+				onClick={(e) => {
+					e.stopPropagation();
+					focusSurface();
+					setFocusId(null);
+				}}
+			>
 				{items.map((p) => {
 					const focused = focusId === p.id;
 					return (
@@ -189,6 +199,7 @@ export function StickerOverlay({
 							onPointerDown={(e) => startDrag(e, p.id)}
 							onClick={(e) => {
 								e.stopPropagation();
+								focusSurface();
 								setFocusId(p.id);
 							}}
 						>
@@ -199,19 +210,13 @@ export function StickerOverlay({
 								draggable={false}
 								className="block w-full select-none"
 								style={{
-									outline: focused ? "2px dashed #9fbda3" : "none",
+									outline: focused ? "2px dashed var(--color-accent)" : "none",
 									outlineOffset: "4px",
 								}}
 							/>
 						</div>
 					);
 				})}
-
-				{/* 빈 공간 클릭 → 포커스 해제 */}
-				<div
-					className="absolute inset-0 -z-10"
-					onClick={() => setFocusId(null)}
-				/>
 			</div>
 
 			{/* 컨트롤 패널 (포커스된 스티커 있으면) */}
@@ -263,36 +268,6 @@ export function StickerOverlay({
 					</div>
 				);
 			})()}
-
-			{/* 라이브러리 트레이 */}
-			<div className="fixed bottom-6 right-6 z-[1000] border rule rounded-lg bg-paper shadow-lg p-3 max-w-[320px]">
-				<p className="kicker text-accent">스티커 라이브러리</p>
-				{library.length === 0 ? (
-					<p className="mt-2 text-xs text-muted">
-						/admin 에서 PNG를 먼저 올려주세요.
-					</p>
-				) : (
-					<ul className="mt-2 flex flex-wrap gap-2 max-h-40 overflow-y-auto">
-						{library.map((s) => (
-							<li key={s.id}>
-								<button
-									type="button"
-									onClick={() => add(s.id)}
-									title={s.label ?? "스티커 붙이기"}
-									className="border rule rounded-md bg-paper-2 p-1 hover:border-accent transition-colors"
-								>
-									{/* eslint-disable-next-line @next/next/no-img-element */}
-									<img
-										src={`/media/${s.r2_key}`}
-										alt={s.label ?? ""}
-										className="block h-12 w-12 object-contain"
-									/>
-								</button>
-							</li>
-						))}
-					</ul>
-				)}
-			</div>
 		</>
 	);
 }
