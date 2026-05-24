@@ -33,7 +33,13 @@ async function expectedToken(secret: string): Promise<string> {
 }
 
 export async function isOwner(): Promise<boolean> {
-	const secret = getEnv().OWNER_SECRET;
+	// 정적 프리렌더(예: /_not-found) 에서는 CF 컨텍스트가 없을 수 있다 — 그땐 비오너.
+	let secret: string | undefined;
+	try {
+		secret = getEnv().OWNER_SECRET;
+	} catch {
+		return false;
+	}
 	if (!secret) return false;
 	const jar = await cookies();
 	const got = jar.get(COOKIE)?.value;

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
+import { PageStickers } from "@/components/page-stickers";
 import { listPosts, type PostKind } from "@/lib/log";
 import { isOwner } from "@/lib/owner";
 import { createPostAction, deletePostAction } from "./actions";
@@ -9,7 +10,7 @@ export const metadata: Metadata = { title: "로그" };
 export const dynamic = "force-dynamic";
 
 const inputCls =
-	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+	"border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
 
 const fmt = new Intl.DateTimeFormat("ko-KR", {
 	dateStyle: "medium",
@@ -26,7 +27,7 @@ const TABS: { key: "" | PostKind; label: string }[] = [
 export default async function LogPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ kind?: string; err?: string; owner?: string }>;
+	searchParams: Promise<{ kind?: string; err?: string; owner?: string; edit?: string }>;
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
@@ -35,12 +36,12 @@ export default async function LogPage({
 	const posts = await listPosts(kind);
 
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/log" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20">
 				{sp.err && (
-					<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+					<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 						{sp.err}
 					</p>
 				)}
@@ -56,7 +57,7 @@ export default async function LogPage({
 								<Link
 									key={t.label}
 									href={t.key ? `/log?kind=${t.key}` : "/log"}
-									className={`border rule px-3 py-1 transition-colors ${
+									className={`border rule rounded-full px-3 py-1 transition-colors ${
 										active
 											? "bg-ink text-paper"
 											: "hover:bg-ink hover:text-paper"
@@ -70,7 +71,7 @@ export default async function LogPage({
 				</div>
 
 				{posts.length === 0 ? (
-					<div className="ticks border rule bg-paper-2 px-6 py-16 mt-6 text-center">
+					<div className="border rule rounded-lg bg-paper-2 px-6 py-16 mt-6 text-center">
 						<span className="dot mx-auto mb-4 block" aria-hidden />
 						<p className="mt-2 text-sm text-muted">아직 글이 없어요.</p>
 					</div>
@@ -80,9 +81,11 @@ export default async function LogPage({
 							<li key={p.id} className="border-b rule pb-6">
 								<div className="flex items-baseline gap-3 flex-wrap">
 									<span
-										className={`kicker ${
-											p.kind === "update" ? "text-accent" : "text-muted"
-										}`}
+										className={
+											p.kind === "update"
+												? "kicker rounded-full bg-accent-2 text-ink px-2.5 py-0.5"
+												: "kicker text-muted"
+										}
 									>
 										{p.kind === "update" ? "갱신" : "잡담"}
 									</span>
@@ -151,7 +154,7 @@ export default async function LogPage({
 							/>
 							<button
 								type="submit"
-								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 							>
 								등록
 							</button>
@@ -163,6 +166,12 @@ export default async function LogPage({
 					</p>
 				)}
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/log"
+				edit={sp.edit === "1"}
+				back="/log"
+			/>
+		</div>
 	);
 }

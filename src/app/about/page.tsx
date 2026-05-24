@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/page-shell";
+import { PageStickers } from "@/components/page-stickers";
 import { about } from "@/lib/about";
 
 export const metadata: Metadata = { title: "소개" };
+export const dynamic = "force-dynamic";
 
 function Chips({ items }: { items: string[] }) {
 	return (
@@ -37,10 +39,15 @@ function List({ title, en, items }: { title: string; en: string; items: string[]
 	);
 }
 
-export default function AboutPage() {
+export default async function AboutPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ edit?: string }>;
+}) {
+	const sp = await searchParams;
 	const a = about;
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/about" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20 grid gap-16">
@@ -219,6 +226,12 @@ export default function AboutPage() {
 					</div>
 				)}
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/about"
+				edit={sp.edit === "1"}
+				back="/about"
+			/>
+		</div>
 	);
 }

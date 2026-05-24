@@ -28,7 +28,7 @@ export async function generateMetadata({
 }
 
 const inputCls =
-	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+	"border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
 
 export default async function CharacterPage({
 	params,
@@ -77,7 +77,7 @@ export default async function CharacterPage({
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-12 sm:py-16 grid gap-12 lg:grid-cols-[360px_1fr]">
 				{/* 일러스트 */}
 				<div>
-					<div className="ticks relative aspect-[3/4] border rule bg-paper-2 overflow-hidden">
+					<div className="relative aspect-[3/4] border rule bg-paper-2 overflow-hidden">
 						{c.portrait_key ? (
 							// eslint-disable-next-line @next/next/no-img-element
 							<img
@@ -99,7 +99,7 @@ export default async function CharacterPage({
 				{/* 본문 */}
 				<div className="min-w-0">
 					{sp.err && (
-						<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+						<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 							{sp.err}
 						</p>
 					)}
@@ -255,7 +255,7 @@ export default async function CharacterPage({
 									/>
 									<button
 										type="submit"
-										className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+										className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 									>
 										저장
 									</button>
@@ -277,11 +277,11 @@ export default async function CharacterPage({
 										name="portrait"
 										accept="image/*"
 										required
-										className="text-sm file:mr-3 file:border file:rule file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+										className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
 									/>
 									<button
 										type="submit"
-										className="border rule px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
+										className="border rule rounded-md px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
 									>
 										업로드
 									</button>
@@ -321,7 +321,7 @@ export default async function CharacterPage({
 									/>
 									<button
 										type="submit"
-										className="border rule px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
+										className="border rule rounded-md px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
 									>
 										관계 추가
 									</button>

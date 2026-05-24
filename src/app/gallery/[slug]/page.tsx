@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAlbumBySlug, listImages } from "@/lib/gallery";
 import { isOwner } from "@/lib/owner";
+import { PageStickers } from "@/components/page-stickers";
 import { uploadImagesAction, deleteImageAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function AlbumPage({
 	searchParams,
 }: {
 	params: Promise<{ slug: string }>;
-	searchParams: Promise<{ tag?: string; ok?: string; err?: string; owner?: string }>;
+	searchParams: Promise<{ tag?: string; ok?: string; err?: string; owner?: string; edit?: string }>;
 }) {
 	const { slug } = await params;
 	const sp = await searchParams;
@@ -42,7 +43,7 @@ export default async function AlbumPage({
 		: all;
 
 	return (
-		<>
+		<div className="relative">
 			<header className="border-b rule">
 				<div className="mx-auto max-w-[1240px] px-5 sm:px-8 py-12 sm:py-16">
 					<Link
@@ -65,7 +66,7 @@ export default async function AlbumPage({
 						<div className="mt-5 flex flex-wrap gap-2 text-sm">
 							<Link
 								href={`/gallery/${slug}`}
-								className={`border rule px-3 py-1 transition-colors ${
+								className={`border rule rounded-full px-3 py-1 transition-colors ${
 									activeTag ? "hover:bg-ink hover:text-paper" : "bg-ink text-paper"
 								}`}
 							>
@@ -75,9 +76,9 @@ export default async function AlbumPage({
 								<Link
 									key={t}
 									href={`/gallery/${slug}?tag=${encodeURIComponent(t)}`}
-									className={`border rule px-3 py-1 transition-colors ${
+									className={`border rule rounded-full px-3 py-1 transition-colors ${
 										activeTag === t
-											? "bg-accent text-on-accent"
+											? "bg-accent-2 text-ink"
 											: "hover:bg-ink hover:text-paper"
 									}`}
 								>
@@ -91,18 +92,18 @@ export default async function AlbumPage({
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-12 sm:py-16">
 				{sp.err && (
-					<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+					<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 						{sp.err}
 					</p>
 				)}
 				{sp.ok && (
-					<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm">
+					<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm">
 						{sp.ok}장 올렸어요.
 					</p>
 				)}
 
 				{images.length === 0 ? (
-					<div className="ticks border rule bg-paper-2 px-6 py-16 text-center">
+					<div className="border rule rounded-lg bg-paper-2 px-6 py-16 text-center">
 						<span className="dot mx-auto mb-4 block" aria-hidden />
 						<p className="text-sm text-muted">
 							{activeTag ? "이 태그의 이미지가 없어요." : "아직 이미지가 없어요."}
@@ -112,7 +113,7 @@ export default async function AlbumPage({
 					<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						{images.map((img) => (
 							<li key={img.id} className="group">
-								<div className="ticks relative border rule bg-paper-2 overflow-hidden">
+								<div className="relative border rule bg-paper-2 overflow-hidden">
 									{/* eslint-disable-next-line @next/next/no-img-element */}
 									<img
 										src={`/media/${img.r2_key}`}
@@ -170,21 +171,21 @@ export default async function AlbumPage({
 								accept="image/*"
 								multiple
 								required
-								className="text-sm file:mr-3 file:border file:rule file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+								className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
 							/>
 							<input
 								name="caption"
 								placeholder="캡션 (선택, 전체 적용)"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<input
 								name="tags"
 								placeholder="태그 쉼표 구분 (선택, 전체 적용)"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<button
 								type="submit"
-								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 							>
 								업로드
 							</button>
@@ -192,6 +193,12 @@ export default async function AlbumPage({
 					</details>
 				)}
 			</section>
-		</>
+
+			<PageStickers
+				surface={`page:/gallery/${slug}`}
+				edit={sp.edit === "1"}
+				back={`/gallery/${slug}`}
+			/>
+		</div>
 	);
 }

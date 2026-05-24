@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
+import { PageStickers } from "@/components/page-stickers";
 import { listEntries, MAX_NAME, MAX_BODY, MOODS } from "@/lib/guestbook";
 import { isOwner } from "@/lib/owner";
 import { signGuestbook, hideEntry, removeEntry } from "./actions";
@@ -19,14 +20,14 @@ const fmt = new Intl.DateTimeFormat("ko-KR", {
 export default async function GuestbookPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ ok?: string; err?: string; owner?: string }>;
+	searchParams: Promise<{ ok?: string; err?: string; owner?: string; edit?: string }>;
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
 	const entries = await listEntries({ owner });
 
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/guestbook" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20 grid gap-14 lg:grid-cols-[1fr_1.4fr]">
@@ -35,12 +36,12 @@ export default async function GuestbookPage({
 					<p className="kicker">Leave a note · 한 줄 남기기</p>
 
 					{sp.err && (
-						<p className="mt-4 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+						<p className="mt-4 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 							{sp.err}
 						</p>
 					)}
 					{sp.ok && (
-						<p className="mt-4 border rule bg-paper-2 px-4 py-3 text-sm">
+						<p className="mt-4 border rule rounded-md bg-paper-2 px-4 py-3 text-sm">
 							남겨주셔서 고마워요. 아래에 바로 떴어요.
 						</p>
 					)}
@@ -68,7 +69,7 @@ export default async function GuestbookPage({
 								name="name"
 								required
 								maxLength={MAX_NAME}
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 								placeholder="불릴 이름"
 							/>
 						</label>
@@ -80,7 +81,7 @@ export default async function GuestbookPage({
 								required
 								maxLength={MAX_BODY}
 								rows={5}
-								className="border rule bg-paper px-3 py-2.5 text-sm leading-relaxed resize-y focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm leading-relaxed resize-y focus:outline-none focus:border-accent"
 								placeholder="다녀간 흔적을 남겨주세요"
 							/>
 						</label>
@@ -91,7 +92,7 @@ export default async function GuestbookPage({
 								name="link"
 								type="url"
 								inputMode="url"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 								placeholder="https:// 홈피나 X"
 							/>
 						</label>
@@ -102,7 +103,7 @@ export default async function GuestbookPage({
 								<select
 									name="mood"
 									defaultValue=""
-									className="border rule bg-paper px-3 py-2 text-sm focus:outline-none focus:border-accent"
+									className="border rule rounded-md bg-paper px-3 py-2 text-sm focus:outline-none focus:border-accent"
 								>
 									<option value="">—</option>
 									{MOODS.map((m) => (
@@ -124,7 +125,7 @@ export default async function GuestbookPage({
 
 						<button
 							type="submit"
-							className="mt-1 inline-flex items-center justify-center gap-2 bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+							className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 						>
 							방명록 남기기 <span aria-hidden>→</span>
 						</button>
@@ -158,7 +159,7 @@ export default async function GuestbookPage({
 					</div>
 
 					{entries.length === 0 ? (
-						<div className="ticks border rule bg-paper-2 px-6 py-16 mt-6 text-center">
+						<div className="border rule rounded-lg bg-paper-2 px-6 py-16 mt-6 text-center">
 							<span className="dot mx-auto mb-4 block" aria-hidden />
 							<p className="display-en text-2xl font-semibold">
 								Empty<span className="text-accent">.</span>
@@ -253,6 +254,12 @@ export default async function GuestbookPage({
 					)}
 				</div>
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/guestbook"
+				edit={sp.edit === "1"}
+				back="/guestbook"
+			/>
+		</div>
 	);
 }

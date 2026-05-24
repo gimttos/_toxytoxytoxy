@@ -10,6 +10,13 @@ import {
 	deleteNote,
 } from "@/lib/admin";
 import { setMeta, setBgm, clearBgm, MAX_BGM_BYTES } from "@/lib/meta";
+import {
+	uploadToLibrary,
+	deleteFromLibrary,
+	addPlacement,
+	updatePlacement,
+	removePlacement,
+} from "@/lib/stickers";
 
 function deny(): never {
 	redirect(`/admin?err=${encodeURIComponent("권한이 없어요.")}`);
@@ -104,4 +111,78 @@ export async function clearBgmAction() {
 	revalidatePath("/admin");
 	revalidatePath("/");
 	redirect("/admin?owner=1");
+}
+
+// ── 스티커 라이브러리 (오너 전용) ──
+
+export async function uploadStickerAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const file = formData.get("file");
+	if (!(file instanceof File)) {
+		redirect(`/admin?err=${encodeURIComponent("스티커 파일을 골라 주세요.")}`);
+	}
+	const res = await uploadToLibrary(file, String(formData.get("label") ?? ""));
+	revalidatePath("/admin");
+	if (!res.ok) redirect(`/admin?err=${encodeURIComponent(res.error)}`);
+	redirect("/admin?owner=1");
+}
+
+export async function deleteStickerAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const id = Number(formData.get("id"));
+	if (Number.isFinite(id)) await deleteFromLibrary(id);
+	revalidatePath("/admin");
+	// 배치가 사이트 전체에 흩어져 있으니 보수적으로 / 도 재검증.
+	revalidatePath("/");
+	redirect("/admin?owner=1");
+}
+
+// ── 스티커 배치 (꾸미기 모드에서 사용) ──
+
+export async function addPlacementAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const res = await addPlacement({
+		stickerId: Number(formData.get("stickerId")),
+		surface: String(formData.get("surface") ?? ""),
+		x_pct: Number(formData.get("x_pct") ?? 40),
+		y_pct: Number(formData.get("y_pct") ?? 40),
+		w_pct: Number(formData.get("w_pct") ?? 18),
+		rot: Number(formData.get("rot") ?? 0),
+		z: Number(formData.get("z") ?? 0),
+	});
+	const back = String(formData.get("back") ?? "/");
+	if (!res.ok) {
+		redirect(`${back}?err=${encodeURIComponent(res.error)}&edit=1`);
+	}
+	revalidatePath(back);
+	redirect(`${back}?edit=1`);
+}
+
+export async function updatePlacementAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const id = Number(formData.get("id"));
+	if (!Number.isFinite(id)) return;
+	const patch: { x_pct?: number; y_pct?: number; w_pct?: number; rot?: number; z?: number } = {};
+	const x = formData.get("x_pct");
+	const y = formData.get("y_pct");
+	const w = formData.get("w_pct");
+	const r = formData.get("rot");
+	const z = formData.get("z");
+	if (x !== null) patch.x_pct = Number(x);
+	if (y !== null) patch.y_pct = Number(y);
+	if (w !== null) patch.w_pct = Number(w);
+	if (r !== null) patch.rot = Number(r);
+	if (z !== null) patch.z = Number(z);
+	await updatePlacement(id, patch);
+	const back = String(formData.get("back") ?? "/");
+	revalidatePath(back);
+}
+
+export async function removePlacementAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const id = Number(formData.get("id"));
+	if (Number.isFinite(id)) await removePlacement(id);
+	const back = String(formData.get("back") ?? "/");
+	revalidatePath(back);
+	redirect(`${back}?edit=1`);
 }

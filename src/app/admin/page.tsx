@@ -3,6 +3,7 @@ import Link from "next/link";
 import { isOwner } from "@/lib/owner";
 import { listRoomLinks, listNotes } from "@/lib/admin";
 import { getSiteMeta } from "@/lib/meta";
+import { listLibrary } from "@/lib/stickers";
 import {
 	unlockAdmin,
 	lockAdmin,
@@ -13,6 +14,8 @@ import {
 	setStatusAction,
 	uploadBgmAction,
 	clearBgmAction,
+	uploadStickerAction,
+	deleteStickerAction,
 } from "./actions";
 
 export const metadata: Metadata = {
@@ -28,7 +31,7 @@ const fmt = new Intl.DateTimeFormat("ko-KR", {
 });
 
 const inputCls =
-	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+	"border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
 
 export default async function AdminPage({
 	searchParams,
@@ -38,6 +41,7 @@ export default async function AdminPage({
 	const sp = await searchParams;
 	const owner = await isOwner();
 	const meta = owner ? await getSiteMeta() : null;
+	const stickers = owner ? await listLibrary() : [];
 
 	return (
 		<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-16 sm:py-24">
@@ -52,7 +56,7 @@ export default async function AdminPage({
 			</div>
 
 			{sp.err && (
-				<p className="mt-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+				<p className="mt-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 					{sp.err}
 				</p>
 			)}
@@ -71,7 +75,7 @@ export default async function AdminPage({
 						/>
 						<button
 							type="submit"
-							className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+							className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 						>
 							잠금 해제
 						</button>
@@ -84,7 +88,7 @@ export default async function AdminPage({
 				<div className="mt-8 grid gap-16">
 					<form
 						action={lockAdmin}
-						className="flex items-center justify-between gap-3 border rule bg-paper-2 px-4 py-3"
+						className="flex items-center justify-between gap-3 border rule rounded-md bg-paper-2 px-4 py-3"
 					>
 						<span className="kicker text-accent">
 							● Owner mode — 사이트 전역 적용 중
@@ -109,7 +113,7 @@ export default async function AdminPage({
 								<Link
 									key={href}
 									href={href}
-									className="border rule px-4 py-2 hover:bg-ink hover:text-paper transition-colors"
+									className="border rule rounded-md px-4 py-2 hover:bg-ink hover:text-paper transition-colors"
 								>
 									{label} →
 								</Link>
@@ -153,7 +157,7 @@ export default async function AdminPage({
 								<input name="note" placeholder="비고 (선택)" className={inputCls} />
 								<button
 									type="submit"
-									className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+									className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 								>
 									추가
 								</button>
@@ -192,7 +196,7 @@ export default async function AdminPage({
 								/>
 								<button
 									type="submit"
-									className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+									className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 								>
 									저장
 								</button>
@@ -222,7 +226,7 @@ export default async function AdminPage({
 							/>
 							<button
 								type="submit"
-								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 							>
 								한마디 저장
 							</button>
@@ -245,7 +249,7 @@ export default async function AdminPage({
 									name="bgm"
 									accept="audio/*"
 									required
-									className="text-sm file:mr-3 file:border file:rule file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+									className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
 								/>
 								<input
 									name="bgm_title"
@@ -254,7 +258,7 @@ export default async function AdminPage({
 								/>
 								<button
 									type="submit"
-									className="border rule px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
+									className="border rule rounded-md px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
 								>
 									BGM 업로드
 								</button>
@@ -273,6 +277,84 @@ export default async function AdminPage({
 								기본 OFF — 방문자가 표지에서 직접 켜요.
 							</p>
 						</div>
+					</div>
+
+					{/* 스티커 라이브러리 — 꾸미기 모드에서 골라 붙임 */}
+					<div>
+						<div className="flex items-baseline justify-between border-b rule pb-3">
+							<h3 className="text-xl sm:text-3xl font-semibold tracking-tight">
+								스티커
+							</h3>
+							<span className="kicker">{stickers.length}개 · 라이브러리</span>
+						</div>
+
+						{stickers.length === 0 ? (
+							<p className="mt-4 text-sm text-muted">
+								아직 스티커가 없어요. PNG 올려두면 꾸미기 모드에서 골라서 붙여요.
+							</p>
+						) : (
+							<ul className="mt-4 flex flex-wrap gap-3">
+								{stickers.map((s) => (
+									<li
+										key={s.id}
+										className="group relative border rule rounded-md bg-paper-2 p-3"
+									>
+										{/* eslint-disable-next-line @next/next/no-img-element */}
+										<img
+											src={`/media/${s.r2_key}`}
+											alt={s.label ?? "sticker"}
+											className="block h-20 w-20 object-contain"
+										/>
+										{s.label && (
+											<p className="mt-1 kicker text-muted text-center text-sm">
+												{s.label}
+											</p>
+										)}
+										<form action={deleteStickerAction} className="mt-1 text-center">
+											<input type="hidden" name="id" value={s.id} />
+											<button
+												type="submit"
+												className="kicker text-accent text-sm hover:opacity-70 transition-opacity"
+											>
+												삭제
+											</button>
+										</form>
+									</li>
+								))}
+							</ul>
+						)}
+
+						<details className="mt-6">
+							<summary className="kicker text-accent cursor-pointer select-none">
+								+ 스티커 올리기
+							</summary>
+							<form
+								action={uploadStickerAction}
+								className="mt-4 grid gap-3 max-w-md"
+							>
+								<input
+									type="file"
+									name="file"
+									accept="image/png,image/webp,image/gif"
+									required
+									className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+								/>
+								<input
+									name="label"
+									placeholder="라벨 (선택)"
+									className={inputCls}
+								/>
+								<button
+									type="submit"
+									className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								>
+									올리기
+								</button>
+								<p className="kicker text-muted">
+									투명 배경 PNG가 가장 예쁨. 최대 4MB.
+								</p>
+							</form>
+						</details>
 					</div>
 				</div>
 			)}
@@ -323,7 +405,7 @@ async function AdminNotes() {
 	return (
 		<ul className="mt-4 grid gap-4">
 			{notes.map((n) => (
-				<li key={n.id} className="border rule p-4">
+				<li key={n.id} className="border rule rounded-md p-4">
 					<div className="flex items-baseline justify-between gap-3">
 						<span className="font-medium">{n.title ?? "메모"}</span>
 						<span className="kicker">{fmt.format(new Date(n.created_at))}</span>

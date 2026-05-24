@@ -1,22 +1,29 @@
 @import "tailwindcss";
 
+/* 손글씨 폰트 — 인천교육 jaram (noonfonts via jsdelivr) */
+@font-face {
+	font-family: "IncheonEducation";
+	src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/iceJaram-Rg.woff2") format("woff2");
+	font-weight: normal;
+	font-display: swap;
+}
+
 /* ─────────────────────────────────────────────────────────────
    디자인 토큰 — 색/폰트는 전부 여기서 바꾼다.
-   무드: 순백 에디토리얼 · 잉크 블랙 · 일렉트릭 블루 악센트
+   무드: 은은한 아이보리 · 따뜻한 차콜 · 세이지 그린 + 연보라 악센트
    ───────────────────────────────────────────────────────────── */
 @theme inline {
-	--color-paper: #fcfcfd;
-	--color-paper-2: #f3f4f6;
-	--color-ink: #121316;
-	--color-muted: #6b7079;
-	--color-line: #e3e3e6;
-	--color-accent: #1f4dff;
-	--color-on-accent: #ffffff;
+	--color-paper: #f9f5ea;
+	--color-paper-2: #f1ebda;
+	--color-ink: #2d2a24;
+	--color-muted: #7a766b;
+	--color-line: #e5decc;
+	--color-accent: #9fbda3;      /* 세이지 그린 — 1순위 악센트 */
+	--color-accent-2: #d6cae3;    /* 연보라 — 2순위 악센트 */
+	--color-on-accent: #2d2a24;   /* 악센트가 옅어서 글자는 어둡게 */
 
-	--font-display: "Fraunces", "Nanum Myeongjo", Georgia, serif;
-	--font-serif-ko: "Nanum Myeongjo", "Fraunces", serif;
-	--font-sans: "IBM Plex Sans KR", system-ui, sans-serif;
-	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--font-sans: "Pretendard Variable", "Pretendard", system-ui, sans-serif;
+	--font-hand: "IncheonEducation", "Pretendard Variable", sans-serif;
 
 	--ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -30,7 +37,6 @@ body {
 	background: var(--color-paper);
 	color: var(--color-ink);
 	font-family: var(--font-sans);
-	font-feature-settings: "ss01";
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 }
@@ -40,16 +46,16 @@ body {
 	color: var(--color-on-accent);
 }
 
-/* ─── 에디토리얼 유틸 ────────────────────────────────────────── */
+/* ─── 유틸 ───────────────────────────────────────────────────── */
 @layer components {
-	/* 작은 모노 라벨 (폴리오 / 섹션 표시) */
+	/* 손글씨 라벨 (포인트·메모·"한마디" 같은 단발) */
 	.kicker {
-		font-family: var(--font-mono);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
+		font-family: var(--font-hand);
+		font-size: 1.15rem;
+		font-weight: 700;
+		letter-spacing: 0;
 		color: var(--color-muted);
+		line-height: 1.2;
 	}
 
 	/* 헤어라인 규칙선 */
@@ -57,7 +63,7 @@ body {
 		border-color: var(--color-line);
 	}
 
-	/* 정체성 마크 — 블루 닷 */
+	/* 정체성 마크 — 세이지 닷 */
 	.dot {
 		display: inline-block;
 		width: 0.4rem;
@@ -67,42 +73,20 @@ body {
 		vertical-align: middle;
 	}
 
-	/* 표지/플레이트 모서리 틱 마크 */
-	.ticks::before,
-	.ticks::after {
-		content: "";
-		position: absolute;
-		width: 14px;
-		height: 14px;
-		border-color: var(--color-ink);
-		border-style: solid;
-	}
-	.ticks::before {
-		top: 12px;
-		left: 12px;
-		border-width: 1px 0 0 1px;
-	}
-	.ticks::after {
-		bottom: 12px;
-		right: 12px;
-		border-width: 0 1px 1px 0;
-	}
-
-	/* 큰 한글 디스플레이 헤드라인 */
+	/* 큰 한글 디스플레이 — 본문 고딕 굵게로 약화 (Phase B 에서 점진 제거 예정) */
 	.display {
-		font-family: var(--font-serif-ko);
-		font-weight: 800;
-		line-height: 0.98;
+		font-family: var(--font-sans);
+		font-weight: 700;
+		line-height: 1.05;
 		letter-spacing: -0.01em;
 	}
 
-	/* 라틴 디스플레이 (Fraunces, 광학 사이즈) */
+	/* 라틴 디스플레이도 같은 sans (Phase B 에서 점진 제거 예정) */
 	.display-en {
-		font-family: var(--font-display);
-		font-optical-sizing: auto;
-		font-weight: 500;
+		font-family: var(--font-sans);
+		font-weight: 600;
 		letter-spacing: -0.02em;
-		line-height: 0.95;
+		line-height: 1;
 	}
 }
 

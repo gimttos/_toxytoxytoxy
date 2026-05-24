@@ -54,7 +54,7 @@ export function BgmToggle({
 				type="button"
 				onClick={toggle}
 				aria-pressed={on}
-				className="kicker border rule px-3 py-1 hover:bg-ink hover:text-paper transition-colors"
+				className="kicker border rule rounded-full px-3 py-1 hover:bg-ink hover:text-paper transition-colors"
 			>
 				{on ? "♪ BGM 끄기" : "♪ BGM 켜기"}
 			</button>

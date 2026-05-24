@@ -12,14 +12,11 @@ export const metadata: Metadata = {
 	description: `${site.tagline}. ${site.taglineKo}.`,
 };
 
-// 폰트는 Google Fonts 스타일시트로 로드 (한글 글리프 안정성을 위해).
-// 다른 폰트로 바꾸려면 이 URL과 globals.css 의 --font-* 토큰만 교체.
+// 본문 고딕 = Pretendard (jsdelivr 동적 서브셋 — 한글 글리프 안정).
+// 포인트 손글씨 = IncheonEducation (globals.css 의 @font-face 로 로드).
+// 폰트 바꾸려면 이 href + globals.css 의 --font-* 토큰 / @font-face 만 교체.
 const FONTS_HREF =
-	"https://fonts.googleapis.com/css2?" +
-	"family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&" +
-	"family=Nanum+Myeongjo:wght@400;700;800&" +
-	"family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&" +
-	"family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap";
+	"https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 export default function RootLayout({
 	children,
@@ -30,8 +27,7 @@ export default function RootLayout({
 		<html lang="ko">
 			<head>
 				<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-				<link rel="preconnect" href="https://fonts.googleapis.com" />
-				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+				<link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
 				<link rel="stylesheet" href={FONTS_HREF} />
 			</head>
 			<body className="min-h-screen flex flex-col">

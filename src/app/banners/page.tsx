@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { PageHeader } from "@/components/page-shell";
+import { PageStickers } from "@/components/page-stickers";
 import { listMyBanners, listFriendLinks, embedSnippet } from "@/lib/banners";
 import { isOwner } from "@/lib/owner";
 import {
@@ -14,12 +15,12 @@ export const metadata: Metadata = { title: "배너" };
 export const dynamic = "force-dynamic";
 
 const inputCls =
-	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+	"border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
 
 export default async function BannersPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ err?: string; owner?: string }>;
+	searchParams: Promise<{ err?: string; owner?: string; edit?: string }>;
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
@@ -35,12 +36,12 @@ export default async function BannersPage({
 	const base = `${proto}://${host}`;
 
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/banners" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20 grid gap-16">
 				{sp.err && (
-					<p className="border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+					<p className="border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 						{sp.err}
 					</p>
 				)}
@@ -63,7 +64,7 @@ export default async function BannersPage({
 									key={b.id}
 									className="grid gap-4 sm:grid-cols-[auto_1fr] items-start"
 								>
-									<div className="ticks border rule bg-paper-2 p-3 inline-block">
+									<div className="border rule rounded-md bg-paper-2 p-3 inline-block">
 										{/* eslint-disable-next-line @next/next/no-img-element */}
 										<img
 											src={`/media/${b.r2_key}`}
@@ -117,7 +118,7 @@ export default async function BannersPage({
 									name="file"
 									accept="image/*"
 									required
-									className="text-sm file:mr-3 file:border file:rule file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+									className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
 								/>
 								<input
 									name="label"
@@ -140,7 +141,7 @@ export default async function BannersPage({
 								</div>
 								<button
 									type="submit"
-									className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+									className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 								>
 									배너 등록
 								</button>
@@ -241,14 +242,14 @@ export default async function BannersPage({
 									type="file"
 									name="imgFile"
 									accept="image/*"
-									className="text-sm file:mr-3 file:border file:rule file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+									className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
 								/>
 								<p className="kicker text-muted">
 									배너 이미지는 업로드나 외부 주소 중 하나 (업로드 우선).
 								</p>
 								<button
 									type="submit"
-									className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+									className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 								>
 									링크 추가
 								</button>
@@ -257,6 +258,12 @@ export default async function BannersPage({
 					)}
 				</div>
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/banners"
+				edit={sp.edit === "1"}
+				back="/banners"
+			/>
+		</div>
 	);
 }

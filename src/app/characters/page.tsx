@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
+import { PageStickers } from "@/components/page-stickers";
 import { listCharacters } from "@/lib/characters";
 import { isOwner } from "@/lib/owner";
 import { createCharacterAction } from "./actions";
@@ -11,19 +12,19 @@ export const dynamic = "force-dynamic";
 export default async function CharactersPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ ok?: string; err?: string; owner?: string }>;
+	searchParams: Promise<{ ok?: string; err?: string; owner?: string; edit?: string }>;
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
 	const chars = await listCharacters();
 
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/characters" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20">
 				{sp.err && (
-					<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+					<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 						{sp.err}
 					</p>
 				)}
@@ -36,7 +37,7 @@ export default async function CharactersPage({
 				</div>
 
 				{chars.length === 0 ? (
-					<div className="ticks border rule bg-paper-2 px-6 py-16 mt-6 text-center">
+					<div className="border rule rounded-lg bg-paper-2 px-6 py-16 mt-6 text-center">
 						<span className="dot mx-auto mb-4 block" aria-hidden />
 						<p className="display-en text-2xl font-semibold">
 							Empty<span className="text-accent">.</span>
@@ -48,7 +49,7 @@ export default async function CharactersPage({
 						{chars.map((c) => (
 							<li key={c.id}>
 								<Link href={`/characters/${c.slug}`} className="group block">
-									<div className="ticks relative aspect-[3/4] border rule bg-paper-2 overflow-hidden">
+									<div className="relative aspect-[3/4] border rule bg-paper-2 overflow-hidden">
 										{c.portrait_key ? (
 											// eslint-disable-next-line @next/next/no-img-element
 											<img
@@ -88,21 +89,21 @@ export default async function CharactersPage({
 								name="name"
 								required
 								placeholder="이름"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<input
 								name="slug"
 								placeholder="슬러그 (비우면 이름에서 생성)"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<input
 								name="tagline"
 								placeholder="한 줄 소개 (선택)"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<button
 								type="submit"
-								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 							>
 								캐릭터 생성
 							</button>
@@ -117,6 +118,12 @@ export default async function CharactersPage({
 					</p>
 				)}
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/characters"
+				edit={sp.edit === "1"}
+				back="/characters"
+			/>
+		</div>
 	);
 }

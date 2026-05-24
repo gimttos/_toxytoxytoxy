@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-shell";
+import { PageStickers } from "@/components/page-stickers";
 import { listAlbums } from "@/lib/gallery";
 import { isOwner } from "@/lib/owner";
 import { createAlbumAction, deleteAlbumAction } from "./actions";
@@ -11,19 +12,19 @@ export const dynamic = "force-dynamic";
 export default async function GalleryPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ ok?: string; err?: string; owner?: string }>;
+	searchParams: Promise<{ ok?: string; err?: string; owner?: string; edit?: string }>;
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
 	const albums = await listAlbums();
 
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/gallery" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20">
 				{sp.err && (
-					<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+					<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 						{sp.err}
 					</p>
 				)}
@@ -36,7 +37,7 @@ export default async function GalleryPage({
 				</div>
 
 				{albums.length === 0 ? (
-					<div className="ticks border rule bg-paper-2 px-6 py-16 mt-6 text-center">
+					<div className="border rule rounded-lg bg-paper-2 px-6 py-16 mt-6 text-center">
 						<span className="dot mx-auto mb-4 block" aria-hidden />
 						<p className="display-en text-2xl font-semibold">
 							Empty<span className="text-accent">.</span>
@@ -48,7 +49,7 @@ export default async function GalleryPage({
 						{albums.map((a) => (
 							<li key={a.id} className="group">
 								<Link href={`/gallery/${a.slug}`} className="block">
-									<div className="ticks relative aspect-[4/3] border rule bg-paper-2 overflow-hidden">
+									<div className="relative aspect-[4/3] border rule bg-paper-2 overflow-hidden">
 										{a.cover_key ? (
 											// eslint-disable-next-line @next/next/no-img-element
 											<img
@@ -103,30 +104,30 @@ export default async function GalleryPage({
 								name="title"
 								required
 								placeholder="앨범 제목"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<input
 								name="slug"
 								placeholder="슬러그 (비우면 제목에서 생성)"
-								className="border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent"
 							/>
 							<textarea
 								name="description"
 								rows={2}
 								placeholder="설명 (선택)"
-								className="border rule bg-paper px-3 py-2.5 text-sm resize-y focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2.5 text-sm resize-y focus:outline-none focus:border-accent"
 							/>
 							<select
 								name="kind"
 								defaultValue="photo"
-								className="border rule bg-paper px-3 py-2 text-sm focus:outline-none focus:border-accent"
+								className="border rule rounded-md bg-paper px-3 py-2 text-sm focus:outline-none focus:border-accent"
 							>
 								<option value="photo">사진</option>
 								<option value="goods">굿즈 · 콜렉션</option>
 							</select>
 							<button
 								type="submit"
-								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 							>
 								앨범 생성
 							</button>
@@ -138,6 +139,12 @@ export default async function GalleryPage({
 					</p>
 				)}
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/gallery"
+				edit={sp.edit === "1"}
+				back="/gallery"
+			/>
+		</div>
 	);
 }

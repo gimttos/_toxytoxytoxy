@@ -24,7 +24,7 @@ export async function generateMetadata({
 }
 
 const inputCls =
-	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+	"border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
 
 export default async function SessionPage({
 	params,
@@ -88,7 +88,7 @@ export default async function SessionPage({
 				{/* 로그 */}
 				<div className="min-w-0">
 					{sp.err && (
-						<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+						<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 							{sp.err}
 						</p>
 					)}
@@ -228,7 +228,7 @@ export default async function SessionPage({
 									/>
 									<button
 										type="submit"
-										className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+										className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 									>
 										로그 저장
 									</button>
@@ -304,7 +304,7 @@ export default async function SessionPage({
 									/>
 									<button
 										type="submit"
-										className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+										className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 									>
 										저장
 									</button>

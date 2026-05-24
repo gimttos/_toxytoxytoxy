@@ -8,6 +8,7 @@ import {
 	type SchedEvent,
 } from "@/lib/schedule";
 import { isOwner } from "@/lib/owner";
+import { PageStickers } from "@/components/page-stickers";
 import {
 	refreshScheduleAction,
 	addMemoAction,
@@ -18,7 +19,7 @@ export const metadata: Metadata = { title: "일정" };
 export const dynamic = "force-dynamic";
 
 const inputCls =
-	"border rule bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
+	"border rule rounded-md bg-paper px-3 py-2.5 text-sm focus:outline-none focus:border-accent";
 
 function fmts(allDay: boolean) {
 	const timeZone = allDay ? "UTC" : "Asia/Seoul";
@@ -69,7 +70,7 @@ function timeLabel(e: SchedEvent): string {
 export default async function SchedulePage({
 	searchParams,
 }: {
-	searchParams: Promise<{ err?: string; owner?: string }>;
+	searchParams: Promise<{ err?: string; owner?: string; edit?: string }>;
 }) {
 	const sp = await searchParams;
 	const owner = await isOwner();
@@ -87,14 +88,14 @@ export default async function SchedulePage({
 	}
 
 	return (
-		<>
+		<div className="relative">
 			<PageHeader href="/schedule" />
 
 			<section className="mx-auto max-w-[1240px] px-5 sm:px-8 py-14 sm:py-20 grid gap-12 lg:grid-cols-[1.5fr_1fr]">
 				{/* 일정 */}
 				<div className="min-w-0">
 					{sp.err && (
-						<p className="mb-6 border rule bg-paper-2 px-4 py-3 text-sm text-accent">
+						<p className="mb-6 border rule rounded-md bg-paper-2 px-4 py-3 text-sm text-accent">
 							{sp.err}
 						</p>
 					)}
@@ -111,7 +112,7 @@ export default async function SchedulePage({
 					</div>
 
 					{!state.configured ? (
-						<div className="ticks border rule bg-paper-2 px-6 py-12 mt-6">
+						<div className="border rule rounded-lg bg-paper-2 px-6 py-12 mt-6">
 							<p className="display-en text-xl font-semibold">
 								Not linked<span className="text-accent">.</span>
 							</p>
@@ -130,7 +131,7 @@ export default async function SchedulePage({
 							)}
 						</div>
 					) : events.length === 0 ? (
-						<div className="ticks border rule bg-paper-2 px-6 py-12 mt-6 text-center">
+						<div className="border rule rounded-lg bg-paper-2 px-6 py-12 mt-6 text-center">
 							<span className="dot mx-auto mb-4 block" aria-hidden />
 							<p className="text-sm text-muted">
 								{state.ok
@@ -223,7 +224,7 @@ export default async function SchedulePage({
 							/>
 							<button
 								type="submit"
-								className="bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
+								className="rounded-md bg-ink text-paper px-5 py-3 text-sm font-medium hover:bg-accent transition-colors"
 							>
 								메모 추가
 							</button>
@@ -234,7 +235,7 @@ export default async function SchedulePage({
 						) : (
 							<ul className="mt-6 grid gap-3">
 								{memos.map((m) => (
-									<li key={m.id} className="border rule p-3">
+									<li key={m.id} className="border rule rounded-md p-3">
 										<div className="flex items-baseline justify-between gap-2">
 											<span className="kicker">{m.on_date}</span>
 											<form action={deleteMemoAction}>
@@ -260,6 +261,12 @@ export default async function SchedulePage({
 					</aside>
 				)}
 			</section>
-		</>
+
+			<PageStickers
+				surface="page:/schedule"
+				edit={sp.edit === "1"}
+				back="/schedule"
+			/>
+		</div>
 	);
 }
