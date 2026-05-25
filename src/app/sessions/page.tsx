@@ -67,9 +67,6 @@ export default async function SessionsPage({
 												{s.review}
 											</span>
 										)}
-										<span className="block kicker text-muted mt-1 break-all">
-											/{s.slug}
-										</span>
 									</span>
 									<span className="kicker self-center flex flex-wrap gap-x-3 group-hover:text-paper/70">
 										{s.system && <span>{s.system}</span>}
