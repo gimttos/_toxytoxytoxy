@@ -14,6 +14,8 @@ import {
 	setStatusAction,
 	uploadBgmAction,
 	clearBgmAction,
+	uploadCoverAction,
+	clearCoverAction,
 	uploadStickerAction,
 	deleteStickerAction,
 } from "./actions";
@@ -275,6 +277,61 @@ export default async function AdminPage({
 							)}
 							<p className="kicker text-muted">
 								기본 OFF — 방문자가 표지에서 직접 켜요.
+							</p>
+						</div>
+
+						<div className="mt-8 grid gap-3 max-w-md">
+							<p className="kicker">
+								표지 이미지 —{" "}
+								{meta?.cover_key ? (
+									<span className="text-accent">등록됨</span>
+								) : (
+									<span className="text-muted">없음</span>
+								)}
+							</p>
+							{meta?.cover_key && (
+								<div className="border rule rounded-md bg-paper-2 p-2 max-w-[200px]">
+									{/* eslint-disable-next-line @next/next/no-img-element */}
+									<img
+										src={`/media/${meta.cover_key}`}
+										alt={meta.cover_alt ?? "표지"}
+										className="block w-full aspect-[4/5] object-cover rounded"
+									/>
+								</div>
+							)}
+							<form action={uploadCoverAction} className="grid gap-3">
+								<input
+									type="file"
+									name="cover"
+									accept="image/*"
+									required
+									className="text-sm file:mr-3 file:border file:rule file:rounded-md file:bg-paper-2 file:px-3 file:py-1.5 file:text-sm"
+								/>
+								<input
+									name="cover_alt"
+									defaultValue={meta?.cover_alt ?? ""}
+									placeholder="alt (스크린리더용 설명, 선택)"
+									className={inputCls}
+								/>
+								<button
+									type="submit"
+									className="border rule rounded-md px-4 py-2 text-sm hover:bg-ink hover:text-paper transition-colors"
+								>
+									표지 이미지 업로드
+								</button>
+							</form>
+							{meta?.cover_key && (
+								<form action={clearCoverAction}>
+									<button
+										type="submit"
+										className="kicker text-accent hover:opacity-70 transition-opacity"
+									>
+										표지 이미지 제거
+									</button>
+								</form>
+							)}
+							<p className="kicker text-muted">
+								4:5 비율 권장. 최대 8MB.
 							</p>
 						</div>
 					</div>

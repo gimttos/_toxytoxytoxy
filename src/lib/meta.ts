@@ -12,12 +12,23 @@ const EXT_BY_TYPE: Record<string, string> = {
 	"audio/mp4": "m4a",
 };
 
+const COVER_EXT_BY_TYPE: Record<string, string> = {
+	"image/png": "png",
+	"image/jpeg": "jpg",
+	"image/webp": "webp",
+	"image/gif": "gif",
+	"image/avif": "avif",
+};
+
 export const MAX_BGM_BYTES = 12 * 1024 * 1024; // 12MB
+export const MAX_COVER_BYTES = 8 * 1024 * 1024; // 8MB
 
 export type SiteMeta = {
 	status: string | null;
 	bgm_key: string | null;
 	bgm_title: string | null;
+	cover_key: string | null;
+	cover_alt: string | null;
 };
 
 export async function getMeta(key: string): Promise<string | null> {
@@ -32,7 +43,7 @@ export async function getSiteMeta(): Promise<SiteMeta> {
 	const { results } = await getDb()
 		.prepare(
 			`SELECT key, value FROM site_meta
-			 WHERE key IN ('status','bgm_key','bgm_title')`,
+			 WHERE key IN ('status','bgm_key','bgm_title','cover_key','cover_alt')`,
 		)
 		.all<{ key: string; value: string | null }>();
 	const m = new Map((results ?? []).map((r) => [r.key, r.value]));
@@ -40,6 +51,8 @@ export async function getSiteMeta(): Promise<SiteMeta> {
 		status: m.get("status") ?? null,
 		bgm_key: m.get("bgm_key") ?? null,
 		bgm_title: m.get("bgm_title") ?? null,
+		cover_key: m.get("cover_key") ?? null,
+		cover_alt: m.get("cover_alt") ?? null,
 	};
 }
 
@@ -87,4 +100,24 @@ export async function clearBgm(): Promise<void> {
 	if (prev) await getMedia().delete(prev);
 	await setMeta("bgm_key", null);
 	await setMeta("bgm_title", null);
+}
+
+export async function setCover(file: File, alt: string): Promise<void> {
+	const ext = COVER_EXT_BY_TYPE[file.type] ?? "jpg";
+	const key = `cover/${crypto.randomUUID()}.${ext}`;
+	await getMedia().put(key, await file.arrayBuffer(), {
+		httpMetadata: { contentType: file.type || "image/jpeg" },
+	});
+	const prev = await getMeta("cover_key");
+	const cleanedAlt = alt.trim();
+	await setMeta("cover_key", key);
+	await setMeta("cover_alt", cleanedAlt || null);
+	if (prev) await getMedia().delete(prev);
+}
+
+export async function clearCover(): Promise<void> {
+	const prev = await getMeta("cover_key");
+	if (prev) await getMedia().delete(prev);
+	await setMeta("cover_key", null);
+	await setMeta("cover_alt", null);
 }

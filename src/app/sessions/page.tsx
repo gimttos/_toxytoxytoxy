@@ -5,7 +5,7 @@ import { PageStickers } from "@/components/page-stickers";
 import { StickerRoot } from "@/components/sticker-root";
 import { listSessions } from "@/lib/sessions";
 import { isOwner } from "@/lib/owner";
-import { createSessionAction } from "./actions";
+import { createSessionAction, deleteSessionAction } from "./actions";
 
 export const metadata: Metadata = { title: "세션" };
 export const dynamic = "force-dynamic";
@@ -67,12 +67,31 @@ export default async function SessionsPage({
 												{s.review}
 											</span>
 										)}
+										<span className="block kicker text-muted mt-1 break-all">
+											/{s.slug}
+										</span>
 									</span>
 									<span className="kicker self-center flex flex-wrap gap-x-3 group-hover:text-paper/70">
 										{s.system && <span>{s.system}</span>}
 										{s.role && <span className="text-accent group-hover:text-paper">{s.role}</span>}
 									</span>
 								</Link>
+								{owner && (
+									<details className="px-2 pb-3 -mt-1">
+										<summary className="kicker text-accent text-xs cursor-pointer hover:opacity-70 list-none w-fit">
+											세션 삭제 ⋯
+										</summary>
+										<form action={deleteSessionAction} className="mt-2">
+											<input type="hidden" name="id" value={s.id} />
+											<button
+												type="submit"
+												className="kicker text-accent text-xs border border-accent rounded-md px-2.5 py-1 hover:bg-accent hover:text-paper transition-colors"
+											>
+												정말 삭제 (로그 같이 지움)
+											</button>
+										</form>
+									</details>
+								)}
 							</li>
 						))}
 					</ul>

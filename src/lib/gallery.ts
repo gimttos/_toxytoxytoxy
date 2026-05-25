@@ -42,11 +42,14 @@ const EXT_BY_TYPE: Record<string, string> = {
 	"image/avif": "avif",
 };
 
+// URL slug 는 ASCII-only. 한글이 path 에 들어가면 Worker/OpenNext 라우팅에서
+// 매치가 깨져 404 → 한글만 입력하면 빈 결과를 돌려주고, 호출부가 영문/숫자
+// 입력을 요구하도록 한다.
 export function slugify(input: string): string {
 	return input
 		.trim()
 		.toLowerCase()
-		.replace(/[^a-z0-9가-힣]+/g, "-")
+		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "")
 		.slice(0, 48);
 }

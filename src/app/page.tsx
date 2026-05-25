@@ -68,7 +68,15 @@ export default async function Home({
 							className="relative rise"
 							style={{ animationDelay: "150ms" }}
 						>
-							<div className="relative aspect-[4/5] border rule rounded-lg bg-paper-2">
+							<div className="relative aspect-[4/5] border rule rounded-lg bg-paper-2 overflow-hidden">
+								{meta.cover_key && (
+									// eslint-disable-next-line @next/next/no-img-element
+									<img
+										src={`/media/${meta.cover_key}`}
+										alt={meta.cover_alt ?? ""}
+										className="absolute inset-0 w-full h-full object-cover"
+									/>
+								)}
 								<PageStickers surface="cover:image" edit={edit} back="/" />
 							</div>
 						</div>

@@ -9,7 +9,7 @@ import {
 	addNote,
 	deleteNote,
 } from "@/lib/admin";
-import { setMeta, setBgm, clearBgm, MAX_BGM_BYTES } from "@/lib/meta";
+import { setMeta, setBgm, clearBgm, MAX_BGM_BYTES, setCover, clearCover, MAX_COVER_BYTES } from "@/lib/meta";
 import {
 	uploadToLibrary,
 	deleteFromLibrary,
@@ -108,6 +108,32 @@ export async function uploadBgmAction(formData: FormData) {
 export async function clearBgmAction() {
 	if (!(await isOwner())) deny();
 	await clearBgm();
+	revalidatePath("/admin");
+	revalidatePath("/");
+	redirect("/admin?owner=1");
+}
+
+export async function uploadCoverAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const file = formData.get("cover");
+	if (!(file instanceof File) || file.size === 0) {
+		redirect(`/admin?err=${encodeURIComponent("이미지를 골라 주세요.")}`);
+	}
+	if (!file.type.startsWith("image/")) {
+		redirect(`/admin?err=${encodeURIComponent("이미지 파일만 올릴 수 있어요.")}`);
+	}
+	if (file.size > MAX_COVER_BYTES) {
+		redirect(`/admin?err=${encodeURIComponent("표지 이미지가 너무 커요 (최대 8MB).")}`);
+	}
+	await setCover(file, String(formData.get("cover_alt") ?? ""));
+	revalidatePath("/admin");
+	revalidatePath("/");
+	redirect("/admin?owner=1");
+}
+
+export async function clearCoverAction() {
+	if (!(await isOwner())) deny();
+	await clearCover();
 	revalidatePath("/admin");
 	revalidatePath("/");
 	redirect("/admin?owner=1");
