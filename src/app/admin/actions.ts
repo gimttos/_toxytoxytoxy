@@ -125,7 +125,14 @@ export async function uploadCoverAction(formData: FormData) {
 	if (file.size > MAX_COVER_BYTES) {
 		redirect(`/admin?err=${encodeURIComponent("표지 이미지가 너무 커요 (최대 8MB).")}`);
 	}
-	await setCover(file, String(formData.get("cover_alt") ?? ""));
+	try {
+		await setCover(file, String(formData.get("cover_alt") ?? ""));
+	} catch (e) {
+		const msg = e instanceof Error ? e.message : String(e);
+		redirect(
+			`/admin?err=${encodeURIComponent(`표지 업로드 실패: ${msg.slice(0, 200)}`)}`,
+		);
+	}
 	revalidatePath("/admin");
 	revalidatePath("/");
 	redirect("/admin?owner=1");
