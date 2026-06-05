@@ -10,6 +10,7 @@ import {
 	removeWord,
 	addTwist,
 	removeTwist,
+	setNote,
 	type DrawnWord,
 } from "@/lib/inspire";
 
@@ -59,6 +60,34 @@ export async function saveComboAction(
 	return res.ok
 		? { ok: true, nonce: prev.nonce + 1 }
 		: { ok: false, error: res.error, nonce: prev.nonce + 1 };
+}
+
+// ── 번역/메모 (덱 카드에서 직접 호출) ────────────────────────
+
+export type NoteResult =
+	| { ok: true; key: string; note: string }
+	| { ok: false; error: string };
+
+export async function saveNoteAction(
+	word: string,
+	note: string,
+): Promise<NoteResult> {
+	if (!(await isOwner())) return { ok: false, error: "권한이 없어요." };
+	const res = await setNote(word, note);
+	revalidatePath("/inspire");
+	return res;
+}
+
+// 큐레이션 폼용 — 단어 + 번역 입력.
+export async function addNoteAction(formData: FormData) {
+	if (!(await isOwner())) deny();
+	const res = await setNote(
+		String(formData.get("word") ?? ""),
+		String(formData.get("note") ?? ""),
+	);
+	revalidatePath("/inspire");
+	if (!res.ok) redirect(`/inspire?err=${encodeURIComponent(res.error)}`);
+	redirect("/inspire?owner=1");
 }
 
 export async function deleteSavedAction(formData: FormData) {

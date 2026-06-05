@@ -103,6 +103,20 @@ export default async function AdminPage({
 						</button>
 					</form>
 
+					{/* 영감 카드 — 오너 전용 생성기 바로가기 (강조) */}
+					<Link
+						href="/inspire"
+						className="group flex items-center justify-between gap-3 border-2 border-accent rounded-md bg-paper-2 px-5 py-4 hover:bg-accent transition-colors"
+					>
+						<span>
+							<span className="display-en text-xl font-semibold">Inspire</span>
+							<span className="ml-2 kicker">영감 카드 · 단어 생성기</span>
+						</span>
+						<span className="text-accent group-hover:text-ink transition-colors" aria-hidden>
+							열기 →
+						</span>
+					</Link>
+
 					{/* 바로가기 */}
 					<div>
 						<p className="kicker">Manage · 바로가기</p>

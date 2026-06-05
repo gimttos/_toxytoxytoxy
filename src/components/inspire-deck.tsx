@@ -4,13 +4,16 @@
 //
 // · 단어 모드: 서로 다른 결(tag)에서 한 장씩 뽑아 카드로 공개. 카드를 누르면 🔒 잠금,
 //   "다시 뽑기" 는 잠그지 않은 카드만 재굴림(부분 리롤).
+// · 번역: 카드의 ✎ 로 지금 뜬 단어에 한국어 번역을 단다. 번역이 있으면 한국어가 크게,
+//   원래 영어가 작게 표시된다("보일 때마다 번역 추가" 흐름).
 // · 비틀기 모드: 단어 대신 "한 마디" 한 장.
 // · 저장: 지금 펼쳐진 조합 + 한 줄 메모를 아카이브에 박제(서버 액션).
 //
 // 뽑기/리롤은 전부 클라이언트에서 즉시 처리(서버 왕복 없음) — 풀은 서버에서 한 번 받아 둔다.
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import type { DrawnWord, Pool } from "@/lib/inspire";
+import { saveNoteAction } from "@/app/inspire/actions";
 
 type SaveState = { ok: boolean; error?: string; nonce: number };
 type SaveAction = (prev: SaveState, fd: FormData) => Promise<SaveState>;
@@ -31,13 +34,19 @@ function rand<T>(arr: T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function normKey(s: string): string {
+	return s.trim().toLowerCase();
+}
+
 export function InspireDeck({
 	pool,
 	twists,
+	notes: initialNotes,
 	saveAction,
 }: {
 	pool: Pool;
 	twists: string[];
+	notes: Record<string, string>;
 	saveAction: SaveAction;
 }) {
 	const liveTags = pool.tags.filter((t) => (pool.words[t]?.length ?? 0) > 0);
@@ -49,12 +58,14 @@ export function InspireDeck({
 	const [twist, setTwist] = useState<{ text: string; nonce: number } | null>(null);
 	const [reduced, setReduced] = useState(false);
 
+	// 단어 → 번역 맵(클라이언트 낙관 갱신). 서버 props 로 초기화.
+	const [notes, setNotes] = useState<Record<string, string>>(initialNotes);
+
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setReduced(!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 	}, []);
 
-	// 한 단어 고르기 — 같은 카드에 직전과 같은 단어가 또 나오는 건 피한다.
 	function pickWord(tag: string, avoid?: string): string {
 		const list = pool.words[tag] ?? [];
 		if (list.length === 0) return "—";
@@ -121,6 +132,38 @@ export function InspireDeck({
 		drawWords(c);
 	}
 
+	// ── 번역 달기 ──
+	const [annotate, setAnnotate] = useState<{ word: string } | null>(null);
+	const [annoVal, setAnnoVal] = useState("");
+	const [annoErr, setAnnoErr] = useState<string | null>(null);
+	const [saving, startSave] = useTransition();
+
+	function openAnnotate(word: string) {
+		setAnnoErr(null);
+		setAnnoVal(notes[normKey(word)] ?? "");
+		setAnnotate({ word });
+	}
+
+	function submitNote() {
+		if (!annotate) return;
+		const { word } = annotate;
+		const value = annoVal;
+		startSave(async () => {
+			const res = await saveNoteAction(word, value);
+			if (res.ok) {
+				setNotes((prev) => {
+					const next = { ...prev };
+					if (res.note) next[res.key] = res.note;
+					else delete next[res.key];
+					return next;
+				});
+				setAnnotate(null);
+			} else {
+				setAnnoErr(res.error);
+			}
+		});
+	}
+
 	const allLocked = cards.length > 0 && cards.every((c) => c.locked);
 	const currentWords: DrawnWord[] = cards.map((c) => ({ word: c.word, tag: c.tag }));
 
@@ -140,30 +183,83 @@ export function InspireDeck({
 				<>
 					{/* 카드 줄 */}
 					<div className="ins-deck mt-6">
-						{cards.map((c, i) => (
-							<button
-								key={i}
-								type="button"
-								onClick={() => toggleLock(i)}
-								title={c.locked ? "잠금 해제" : "이 카드 잠그기"}
-								className={`ins-card ${c.locked ? "is-locked" : ""}`}
-							>
-								<span
-									key={c.nonce}
-									className={`ins-card__face ${reduced ? "" : "ins-flip"}`}
-									style={{ animationDelay: `${i * 90}ms` }}
-								>
-									<span className="ins-card__tag">
-										{TAG_LABEL[c.tag] ?? c.tag}
-									</span>
-									<span className="ins-card__word">{c.word}</span>
-									<span className="ins-card__lock" aria-hidden>
-										{c.locked ? "🔒" : ""}
-									</span>
-								</span>
-							</button>
-						))}
+						{cards.map((c, i) => {
+							const tr = notes[normKey(c.word)];
+							return (
+								<div key={i} className={`ins-card ${c.locked ? "is-locked" : ""}`}>
+									<button
+										type="button"
+										onClick={() => toggleLock(i)}
+										title={c.locked ? "잠금 해제" : "이 카드 잠그기"}
+										className="ins-card__hit"
+									>
+										<span
+											key={c.nonce}
+											className={`ins-card__face ${reduced ? "" : "ins-flip"}`}
+											style={{ animationDelay: `${i * 90}ms` }}
+										>
+											<span className="ins-card__tag">
+												{TAG_LABEL[c.tag] ?? c.tag}
+											</span>
+											<span className="ins-card__word">{tr || c.word}</span>
+											{tr && <span className="ins-card__orig">{c.word}</span>}
+											{c.locked && (
+												<span className="ins-card__lock" aria-hidden>
+													🔒
+												</span>
+											)}
+										</span>
+									</button>
+									<button
+										type="button"
+										onClick={() => openAnnotate(c.word)}
+										title="번역 달기"
+										className="ins-card__note-btn"
+									>
+										{tr ? "✎" : "＋역"}
+									</button>
+								</div>
+							);
+						})}
 					</div>
+
+					{/* 번역 패널 */}
+					{annotate && (
+						<div className="mt-4 border rule rounded-md bg-paper-2 p-3 max-w-md">
+							<p className="kicker">
+								‘<span className="text-ink">{annotate.word}</span>’ 번역
+							</p>
+							<div className="mt-2 flex flex-wrap items-center gap-2">
+								<input
+									autoFocus
+									value={annoVal}
+									onChange={(e) => setAnnoVal(e.target.value)}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") submitNote();
+										if (e.key === "Escape") setAnnotate(null);
+									}}
+									placeholder="한국어 번역 (비우면 삭제)"
+									className="flex-1 min-w-[10rem] border rule rounded-md bg-paper px-3 py-2 text-sm focus:outline-none focus:border-accent"
+								/>
+								<button
+									type="button"
+									onClick={submitNote}
+									disabled={saving}
+									className="rounded-md bg-accent text-ink px-4 py-2 text-sm font-medium hover:opacity-80 transition-opacity disabled:opacity-40"
+								>
+									{saving ? "저장 중…" : "저장"}
+								</button>
+								<button
+									type="button"
+									onClick={() => setAnnotate(null)}
+									className="kicker text-muted hover:text-accent transition-colors"
+								>
+									취소
+								</button>
+							</div>
+							{annoErr && <p className="kicker text-accent mt-1">{annoErr}</p>}
+						</div>
+					)}
 
 					{/* 컨트롤 */}
 					<div className="mt-6 flex flex-wrap items-center gap-3">

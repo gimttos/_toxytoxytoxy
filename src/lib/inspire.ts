@@ -200,6 +200,50 @@ export async function deleteSaved(id: number): Promise<void> {
 	await getDb().prepare(`DELETE FROM inspire_saved WHERE id = ?`).bind(id).run();
 }
 
+// ── 단어 번역/메모 ────────────────────────────────────────────
+// key(정규화 단어) → 번역. 시드/추가 단어 공통으로 묶인다.
+
+export async function getNotes(): Promise<Record<string, string>> {
+	const rows = await safe(
+		async () =>
+			(
+				await getDb()
+					.prepare(`SELECT key, note FROM inspire_notes`)
+					.all<{ key: string; note: string }>()
+			).results ?? [],
+		[] as { key: string; note: string }[],
+	);
+	const out: Record<string, string> = {};
+	for (const r of rows) out[r.key] = r.note;
+	return out;
+}
+
+// 번역 저장(빈 값이면 삭제). 반환: 정규화 키 + 정리된 번역('' = 삭제됨).
+export async function setNote(
+	word: string,
+	note: string,
+): Promise<{ ok: true; key: string; note: string } | { ok: false; error: string }> {
+	const key = normKey(word);
+	if (!key) return { ok: false, error: "단어가 비어 있어요." };
+	const text = (note ?? "").trim();
+	const db = getDb();
+	if (!text) {
+		await db.prepare(`DELETE FROM inspire_notes WHERE key = ?`).bind(key).run();
+		return { ok: true, key, note: "" };
+	}
+	if (text.length > 80) return { ok: false, error: "번역이 너무 길어요." };
+	const now = Date.now();
+	await db
+		.prepare(
+			`INSERT INTO inspire_notes (key, note, created_at, updated_at)
+			 VALUES (?, ?, ?, ?)
+			 ON CONFLICT (key) DO UPDATE SET note = excluded.note, updated_at = excluded.updated_at`,
+		)
+		.bind(key, text, now, now)
+		.run();
+	return { ok: true, key, note: text };
+}
+
 // ── 풀 큐레이션 (추가 / 솎기) ─────────────────────────────────
 
 export async function addWord(input: { word: string; tag: string }): Promise<Result> {

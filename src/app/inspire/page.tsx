@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { isOwner } from "@/lib/owner";
-import { getPool, getTwists, listSaved, poolStats, TAGS, TAG_LABEL } from "@/lib/inspire";
+import {
+	getPool,
+	getTwists,
+	getNotes,
+	listSaved,
+	poolStats,
+	TAGS,
+	TAG_LABEL,
+} from "@/lib/inspire";
 import { InspireDeck } from "@/components/inspire-deck";
 import {
 	unlockInspire,
@@ -12,7 +20,12 @@ import {
 	removeWordAction,
 	addTwistAction,
 	removeTwistAction,
+	addNoteAction,
 } from "./actions";
+
+function nk(s: string): string {
+	return s.trim().toLowerCase();
+}
 
 export const metadata: Metadata = {
 	title: "영감 카드",
@@ -85,9 +98,10 @@ export default async function InspirePage({
 }
 
 async function OwnerView() {
-	const [pool, twists, saved, stats] = await Promise.all([
+	const [pool, twists, notes, saved, stats] = await Promise.all([
 		getPool(),
 		getTwists(),
+		getNotes(),
 		listSaved(),
 		poolStats(),
 	]);
@@ -108,7 +122,12 @@ async function OwnerView() {
 			</form>
 
 			{/* 덱 */}
-			<InspireDeck pool={pool} twists={twists} saveAction={saveComboAction} />
+			<InspireDeck
+				pool={pool}
+				twists={twists}
+				notes={notes}
+				saveAction={saveComboAction}
+			/>
 
 			{/* 저장한 조합 */}
 			<div>
@@ -126,16 +145,22 @@ async function OwnerView() {
 							<li key={s.id} className="border rule rounded-md p-4">
 								<div className="flex items-baseline justify-between gap-3 flex-wrap">
 									<div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-										{s.words.map((w, i) => (
-											<span key={i} className="inline-flex items-baseline gap-1">
-												{i > 0 && (
-													<span className="text-muted" aria-hidden>
-														·
-													</span>
-												)}
-												<span className="font-medium">{w.word}</span>
-											</span>
-										))}
+										{s.words.map((w, i) => {
+											const tr = notes[nk(w.word)];
+											return (
+												<span key={i} className="inline-flex items-baseline gap-1">
+													{i > 0 && (
+														<span className="text-muted" aria-hidden>
+															·
+														</span>
+													)}
+													<span className="font-medium">{tr || w.word}</span>
+													{tr && (
+														<span className="text-muted text-sm">({w.word})</span>
+													)}
+												</span>
+											);
+										})}
 										{s.twist && (
 											<span className="text-sm text-accent-2 italic">
 												“{s.twist}”
@@ -182,7 +207,31 @@ async function OwnerView() {
 					))}
 				</div>
 
-				<div className="mt-6 grid gap-8 sm:grid-cols-2">
+				{/* 번역 달기 — 단어를 만날 때마다 한국어를 달아 둔다 */}
+				<form
+					action={addNoteAction}
+					className="mt-6 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end border rule rounded-md bg-paper-2 p-4"
+				>
+					<div className="grid gap-1">
+						<label className="kicker">단어 (영어)</label>
+						<input name="word" required placeholder="lighthouse" className={inputCls} />
+					</div>
+					<div className="grid gap-1">
+						<label className="kicker">번역 (비우면 삭제)</label>
+						<input name="note" placeholder="등대" className={inputCls} />
+					</div>
+					<button
+						type="submit"
+						className="rounded-md bg-accent text-ink px-4 py-2.5 text-sm font-medium hover:opacity-80 transition-opacity"
+					>
+						번역 저장
+					</button>
+					<p className="kicker text-muted sm:col-span-3">
+						카드에 뜬 단어는 ✎ 로 바로 달 수 있어요. 달면 카드에 한국어가 크게, 영어가 작게 떠요.
+					</p>
+				</form>
+
+				<div className="mt-8 grid gap-8 sm:grid-cols-2">
 					{/* 단어 추가 */}
 					<form action={addWordAction} className="grid gap-3">
 						<p className="kicker">단어 추가</p>

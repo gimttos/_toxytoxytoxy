@@ -141,6 +141,7 @@ body {
 }
 
 .ins-card {
+	position: relative;
 	flex: 1 1 8.5rem;
 	min-width: 8.5rem;
 	max-width: 12rem;
@@ -154,12 +155,54 @@ body {
 		transparent 0.5px
 	);
 	background-size: 9px 9px;
-	cursor: pointer;
-	text-align: left;
 	transition:
 		border-color 0.2s,
 		box-shadow 0.2s,
 		transform 0.2s var(--ease-out-soft);
+}
+
+/* 카드 본체 클릭 = 잠금 토글 */
+.ins-card__hit {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	border-radius: inherit;
+}
+
+/* 번역 달기 버튼 (오른쪽 아래) */
+.ins-card__note-btn {
+	position: absolute;
+	bottom: 0.4rem;
+	right: 0.5rem;
+	z-index: 2;
+	font-family: var(--font-hand);
+	font-size: 0.9rem;
+	line-height: 1;
+	color: var(--color-muted);
+	background: transparent;
+	border: 0;
+	padding: 0.15rem 0.3rem;
+	border-radius: 0.35rem;
+	cursor: pointer;
+}
+
+.ins-card__note-btn:hover {
+	color: var(--color-accent-2);
+	background: var(--color-paper);
+}
+
+/* 번역 아래 작게 붙는 원어 */
+.ins-card__orig {
+	margin-top: 0.2rem;
+	font-family: var(--font-hand);
+	font-size: 0.95rem;
+	line-height: 1;
+	color: var(--color-muted);
 }
 
 .ins-card:hover {
@@ -201,6 +244,7 @@ body {
 
 .ins-card__word {
 	margin-top: auto;
+	padding-right: 1.4rem;
 	font-weight: 700;
 	font-size: 1.4rem;
 	line-height: 1.15;
@@ -222,10 +266,6 @@ body {
 	top: 0.6rem;
 	right: 0.7rem;
 	font-size: 0.85rem;
-}
-
-.ins-card {
-	position: relative;
 }
 
 @keyframes ins-flip {
