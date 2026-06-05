@@ -37,6 +37,7 @@ export const nav: NavItem[] = [
 	{ no: "07", label: "로그", en: "Log", href: "/log", desc: "기록 · 잡담", status: "live" },
 	{ no: "08", label: "배너", en: "Banners", href: "/banners", desc: "배너 교환 · 링크", status: "live" },
 	{ no: "09", label: "방명록", en: "Guestbook", href: "/guestbook", desc: "댓글", status: "live" },
+	{ no: "00", label: "영감 카드", en: "Inspire", href: "/inspire", desc: "영감 단어 생성기", status: "live", admin: true },
 	{ no: "00", label: "어드민", en: "Admin", href: "/admin", desc: "관리자 메뉴", status: "live", admin: true },
 ];
 

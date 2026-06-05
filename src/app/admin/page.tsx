@@ -108,6 +108,7 @@ export default async function AdminPage({
 						<p className="kicker">Manage · 바로가기</p>
 						<div className="mt-3 flex flex-wrap gap-3 text-sm">
 							{[
+								["/inspire", "영감 카드"],
 								["/guestbook", "방명록 관리"],
 								["/gallery", "갤러리 업로드"],
 								["/characters", "캐릭터 편집"],
