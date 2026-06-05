@@ -54,6 +54,45 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
 	}
 }
 
+// 스키마 자동 생성 — wrangler 마이그레이션(0010/0011)을 안 돌려도 쓰기가 동작하도록,
+// 첫 쓰기 전에 테이블을 보장한다. CREATE TABLE IF NOT EXISTS 라 마이그레이션과 충돌 없음.
+let schemaReady = false;
+async function ensureSchema(): Promise<void> {
+	if (schemaReady) return;
+	const db = getDb();
+	await db.batch([
+		db.prepare(
+			`CREATE TABLE IF NOT EXISTS inspire_words (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				word TEXT NOT NULL, tag TEXT NOT NULL,
+				created_at INTEGER NOT NULL, UNIQUE (tag, word))`,
+		),
+		db.prepare(
+			`CREATE TABLE IF NOT EXISTS inspire_twists (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				text TEXT NOT NULL UNIQUE, created_at INTEGER NOT NULL)`,
+		),
+		db.prepare(
+			`CREATE TABLE IF NOT EXISTS inspire_hidden (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				kind TEXT NOT NULL, key TEXT NOT NULL,
+				created_at INTEGER NOT NULL, UNIQUE (kind, key))`,
+		),
+		db.prepare(
+			`CREATE TABLE IF NOT EXISTS inspire_saved (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				words_json TEXT NOT NULL, twist TEXT, memo TEXT,
+				created_at INTEGER NOT NULL)`,
+		),
+		db.prepare(
+			`CREATE TABLE IF NOT EXISTS inspire_notes (
+				key TEXT PRIMARY KEY, note TEXT NOT NULL,
+				created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)`,
+		),
+	]);
+	schemaReady = true;
+}
+
 // ── 실효 단어 풀 ───────────────────────────────────────────────
 
 export async function getPool(): Promise<Pool> {
@@ -186,6 +225,7 @@ export async function saveCombo(input: {
 	if (words.length === 0 && !twist)
 		return { ok: false, error: "저장할 조합이 없어요." };
 	const memo = (input.memo ?? "").trim();
+	await ensureSchema();
 	await getDb()
 		.prepare(
 			`INSERT INTO inspire_saved (words_json, twist, memo, created_at)
@@ -197,6 +237,7 @@ export async function saveCombo(input: {
 }
 
 export async function deleteSaved(id: number): Promise<void> {
+	await ensureSchema();
 	await getDb().prepare(`DELETE FROM inspire_saved WHERE id = ?`).bind(id).run();
 }
 
@@ -226,12 +267,13 @@ export async function setNote(
 	const key = normKey(word);
 	if (!key) return { ok: false, error: "단어가 비어 있어요." };
 	const text = (note ?? "").trim();
+	if (text.length > 80) return { ok: false, error: "번역이 너무 길어요." };
+	await ensureSchema();
 	const db = getDb();
 	if (!text) {
 		await db.prepare(`DELETE FROM inspire_notes WHERE key = ?`).bind(key).run();
 		return { ok: true, key, note: "" };
 	}
-	if (text.length > 80) return { ok: false, error: "번역이 너무 길어요." };
 	const now = Date.now();
 	await db
 		.prepare(
@@ -252,6 +294,7 @@ export async function addWord(input: { word: string; tag: string }): Promise<Res
 	if (!word) return { ok: false, error: "단어를 입력해 주세요." };
 	if (!TAGS.includes(tag)) return { ok: false, error: "결(태그)을 골라 주세요." };
 	if (word.length > 24) return { ok: false, error: "단어가 너무 길어요." };
+	await ensureSchema();
 	const db = getDb();
 	// 솎음 목록에 있었다면 되살린다.
 	await db
@@ -271,6 +314,7 @@ export async function addWord(input: { word: string; tag: string }): Promise<Res
 // 단어를 풀에서 뺀다 — 추가 단어면 삭제, 시드 단어면 솎음 처리.
 export async function removeWord(word: string): Promise<void> {
 	const key = normKey(word);
+	await ensureSchema();
 	const db = getDb();
 	await db.prepare(`DELETE FROM inspire_words WHERE LOWER(word) = ?`).bind(key).run();
 	await db
@@ -286,6 +330,7 @@ export async function addTwist(text: string): Promise<Result> {
 	const t = (text ?? "").trim().replace(/\s+/g, " ");
 	if (!t) return { ok: false, error: "한 마디를 입력해 주세요." };
 	if (t.length > 140) return { ok: false, error: "한 마디가 너무 길어요." };
+	await ensureSchema();
 	const db = getDb();
 	await db
 		.prepare(`DELETE FROM inspire_hidden WHERE kind = 'twist' AND key = ?`)
@@ -303,6 +348,7 @@ export async function addTwist(text: string): Promise<Result> {
 
 export async function removeTwist(text: string): Promise<void> {
 	const key = normKey(text);
+	await ensureSchema();
 	const db = getDb();
 	await db.prepare(`DELETE FROM inspire_twists WHERE LOWER(text) = ?`).bind(key).run();
 	await db
